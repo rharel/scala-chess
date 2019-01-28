@@ -1,15 +1,8 @@
 package core
 
-sealed trait PieceColor {
+sealed trait PieceColor extends Debuggable {
   def name: String
-  def goesFirst(): Boolean
-  def goesLast(): Boolean = !goesFirst()
+  def debug(): String = name
 }
-case object Black extends PieceColor {
-  val name = "black"
-  def goesFirst() = false
-}
-case object White extends PieceColor {
-  val name = "white"
-  def goesFirst() = true
-}
+case object Black extends PieceColor { val name = "black" }
+case object White extends PieceColor { val name = "white" }
