@@ -8,16 +8,5 @@ class Board extends Debuggable {
   def isFree(row: Int, col: Int): Boolean = at(row, col).isEmpty
   def isOccupied(row: Int, col: Int): Boolean = !isFree(row, col)
 
-  def findMovesFrom(row: Int, col: Int): List[PieceMove] = throw new NotImplementedError()
-  def findPawnMovesFrom(row: Int, col: Int): List[PieceMove] = throw new NotImplementedError()
-  def findKnightMovesFrom(row: Int, col: Int): List[PieceMove] = throw new NotImplementedError()
-  def findBishopMovesFrom(row: Int, col: Int): List[PieceMove] = throw new NotImplementedError()
-  def findRookMovesFrom(row: Int, col: Int): List[PieceMove] = throw new NotImplementedError()
-  def findQueenMovesFrom(row: Int, col: Int): List[PieceMove] = throw new NotImplementedError()
-  def findKingMovesFrom(row: Int, col: Int): List[PieceMove] = throw new NotImplementedError()
-
-  def isCheck(color: PieceColor): Boolean = throw new NotImplementedError()
-  def isMate(color: PieceColor): Boolean = throw new NotImplementedError()
-
-  def debug() = throw new NotImplementedError()
+  def debug = throw new NotImplementedError()
 }

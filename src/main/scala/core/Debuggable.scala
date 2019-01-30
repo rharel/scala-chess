@@ -1,3 +1,3 @@
 package core
 
-trait Debuggable { def debug(): String }
+trait Debuggable { def debug: String }

@@ -2,7 +2,7 @@ package core
 
 sealed trait PieceKind extends Debuggable {
   def name: String
-  def debug(): String = name
+  def debug: String = name
 }
 case object Pawn extends PieceKind { val name = "pawn" }
 case object Knight extends PieceKind { val name = "knight" }
