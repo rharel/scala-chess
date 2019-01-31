@@ -11,7 +11,7 @@ case class Resign(loser: PieceColor) extends GameResult {
 case class Stalemate(playerToMove: PieceColor) extends GameResult {
   override def toString = s"stalemate for $playerToMove"
 }
-case class AgreedDraw(proposer: PieceColor) extends GameResult {
+case class DrawAgreement(proposer: PieceColor) extends GameResult {
   override def toString = s"draw proposed by $proposer"
 }
 case object ThreefoldRepetition extends GameResult {
