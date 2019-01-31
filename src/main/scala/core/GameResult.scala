@@ -1,22 +1,22 @@
 package core
 
-sealed trait GameResult extends Debuggable
+sealed trait GameResult
 
 case class Checkmate(winner: PieceColor) extends GameResult {
-  def debug = s"${winner.debug} wins"
+  override def toString = s"$winner wins"
 }
 case class Resign(loser: PieceColor) extends GameResult {
-  def debug = s"${loser.debug} resigns"
+  override def toString = s"$loser resigns"
 }
 case class Stalemate(playerToMove: PieceColor) extends GameResult {
-  def debug = s"stalemate for ${playerToMove.debug}"
+  override def toString = s"stalemate for $playerToMove"
 }
 case class AgreedDraw(proposer: PieceColor) extends GameResult {
-  def debug = s"draw proposed by ${proposer.debug}"
+  override def toString = s"draw proposed by $proposer"
 }
 case object ThreefoldRepetition extends GameResult {
-  def debug = "threefold repetition"
+  override def toString = "threefold repetition"
 }
 case object FiftyMoveRule extends GameResult {
-  def debug = "fifty move rule"
+  override def toString = "fifty move rule"
 }

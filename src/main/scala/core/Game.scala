@@ -1,7 +1,6 @@
 package core
 
-class Game extends Debuggable {
-
+class Game {
   def moves: List[Move] = throw new NotImplementedError()
   def playerToMove: PieceColor = throw new NotImplementedError()
 
@@ -25,5 +24,5 @@ class Game extends Debuggable {
   def findQueenMovesFrom(row: Int, col: Int): List[Move] = throw new NotImplementedError()
   def findKingMovesFrom(row: Int, col: Int): List[Move] = throw new NotImplementedError()
 
-  def debug = throw new NotImplementedError()
+  override def toString = throw new NotImplementedError()
 }

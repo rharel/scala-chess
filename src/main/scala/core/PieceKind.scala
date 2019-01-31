@@ -1,8 +1,8 @@
 package core
 
-sealed trait PieceKind extends Debuggable {
+sealed trait PieceKind {
   def name: String
-  def debug: String = name
+  override def toString: String = name
 }
 case object Pawn extends PieceKind { val name = "pawn" }
 case object Knight extends PieceKind { val name = "knight" }
