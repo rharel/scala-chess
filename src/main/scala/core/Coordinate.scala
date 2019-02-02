@@ -1,8 +1,8 @@
 package core
 
 object Coordinate {
-  val First = 0
-  val Last = 7
+  val First: Int = 0
+  val Last: Int = Board.SIZE - 1
 
   def isValid(value: Int): Boolean = First <= value && value <= Last
   def isFirst(value: Int): Boolean = value == First
@@ -10,6 +10,9 @@ object Coordinate {
 }
 
 object Row {
+  val First: Row = Row.fromIndex(Coordinate.First)
+  val Last: Row = Row.fromIndex(Coordinate.Last)
+
   def fromIndex(index: Int): Row = {
     assert(Coordinate.isValid(index))
     Row(index)
@@ -23,10 +26,10 @@ final case class Row private (index: Int) extends AnyVal {
   def +(offset: Int): Row = Row.fromIndex(index + offset)
   def -(offset: Int): Row = this + (-offset)
 
-  def ==(other: Row): Boolean = index == other.index
+  def ==(other: Row): Boolean = this.index == other.index
   def !=(other: Row): Boolean = !(this == other)
 
-  def <(other: Row): Boolean = index < other.index
+  def <(other: Row): Boolean = this.index < other.index
   def <=(other: Row): Boolean = !(other < this)
   def >(other: Row): Boolean = other < this
   def >=(other: Row): Boolean = !(this < other)
@@ -35,6 +38,9 @@ final case class Row private (index: Int) extends AnyVal {
 }
 
 object Col {
+  val First: Col = Col.fromIndex(Coordinate.First)
+  val Last: Col = Col.fromIndex(Coordinate.Last)
+
   def fromIndex(index: Int): Col = {
     assert(Coordinate.isValid(index))
     Col(index)
@@ -48,10 +54,10 @@ final case class Col private (index: Int) extends AnyVal {
   def +(offset: Int): Col = Col.fromIndex(index + offset)
   def -(offset: Int): Col = this + (-offset)
 
-  def ==(other: Col): Boolean = index == other.index
+  def ==(other: Col): Boolean = this.index == other.index
   def !=(other: Col): Boolean = !(this == other)
 
-  def <(other: Col): Boolean = index < other.index
+  def <(other: Col): Boolean = this.index < other.index
   def <=(other: Col): Boolean = !(other < this)
   def >(other: Col): Boolean = other < this
   def >=(other: Col): Boolean = !(this < other)
