@@ -3,14 +3,14 @@ package core
 import CoordinateConversion.{intToRow, intToCol}
 
 object Board {
-  val SIZE = 8
+  val Size = 8
 
   def squares: Iterator[Square] = squareList.iterator
 
   private val squareList: List[Square] = {
     var result = List.empty[Square]
-    for (row <- 0 until Board.SIZE) {
-      for (col <- 0 until Board.SIZE) {
+    for (row <- 0 until Board.Size) {
+      for (col <- 0 until Board.Size) {
         result = result :+ Square(row, col)
       }
     }
@@ -45,7 +45,7 @@ final class Board {
     result
   }
 
-  private def toGridIndex(row: Row, col: Col): Int = Board.SIZE * row.index + col.index
+  private def toGridIndex(row: Row, col: Col): Int = Board.Size * row.index + col.index
 
   private def at(index: Int): Option[Piece] = grid(index)
   private def take(index: Int): Option[Piece] = {
@@ -59,5 +59,5 @@ final class Board {
     previousContents
   }
 
-  private val grid = Array.fill[Option[Piece]](Board.SIZE * Board.SIZE)(None)
+  private val grid = Array.fill[Option[Piece]](Board.Size * Board.Size)(None)
 }
