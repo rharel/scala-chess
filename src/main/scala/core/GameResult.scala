@@ -5,7 +5,7 @@ sealed trait GameResult
 final case class Checkmate(winner: PieceColor) extends GameResult {
   override def toString = s"$winner wins"
 }
-final case class Resign(loser: PieceColor) extends GameResult {
+final case class Resignation(loser: PieceColor) extends GameResult {
   override def toString = s"$loser resigns"
 }
 final case class Stalemate(playerToMove: PieceColor) extends GameResult {
