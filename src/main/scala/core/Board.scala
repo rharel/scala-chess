@@ -1,6 +1,6 @@
 package core
 
-class Board {
+final class Board {
   def at(row: Int, col: Int): Option[Piece] = throw new NotImplementedError()
   def take(row: Int, col: Int): Option[Piece] = throw new NotImplementedError()
   def put(row: Int, col: Int, piece: Piece) = throw new NotImplementedError()

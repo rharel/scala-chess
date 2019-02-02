@@ -1,7 +1,7 @@
 package core
 
 sealed trait PieceColor {
-  def name: String
+  val name: String
   override def toString: String = name
 }
 case object Black extends PieceColor { val name = "black" }

@@ -1,7 +1,7 @@
 package core
 
 sealed trait PieceKind {
-  def name: String
+  val name: String
   override def toString: String = name
 }
 case object Pawn extends PieceKind { val name = "pawn" }

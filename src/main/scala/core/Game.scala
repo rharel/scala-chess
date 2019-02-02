@@ -1,6 +1,6 @@
 package core
 
-class Game {
+final class Game {
   def moves: List[Move] = throw new NotImplementedError()
   def playerToMove: PieceColor = throw new NotImplementedError()
 
