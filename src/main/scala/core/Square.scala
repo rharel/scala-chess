@@ -1,8 +1,11 @@
 package core
 
-final case class Square(row: Int, col: Int) {
-  assert(0 <= row && row < 8)
-  assert(0 <= col && col < 8)
-  
-  override def toString = s"${('a' + col).toChar}${row + 1}"
+object Square {
+  def isValid(row: Row, col: Col): Boolean = row.isValid && col.isValid
+}
+final case class Square(row: Row, col: Col) {
+  assert(isValid)
+
+  def isValid: Boolean = Square.isValid(row, col)
+  override def toString = s"$col$row"
 }
