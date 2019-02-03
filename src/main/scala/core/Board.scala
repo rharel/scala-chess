@@ -1,45 +1,36 @@
 package core
 
-object Board {
-  val Size = 8
-  val SquareCount: Int = Size * Size
+final class Board {
+  def apply(square: Square): Option[Piece] = this(square.row, square.col)
+  def apply(row: Row, col: Col): Option[Piece] = grid(row, col)
 
-  def squares: Iterator[Square] = {
-    import CoordinateConversion.{intToRow, intToCol}
-    for {
-      row <- (0 until Board.Size).iterator
-      col <- (0 until Board.Size).iterator
-    } yield Square(row, col)
+  def update(square: Square, value: Option[Piece]): Unit =
+    this(square.row, square.col) = value
+  def update(row: Row, col: Col, value: Option[Piece]): Unit =
+    grid(row, col) = value
+
+  def take(square: Square): Option[Piece] = take(square.row, square.col)
+  def take(row: Row, col: Col): Option[Piece] = {
+    val contents = this(row, col)
+    this(row, col) = None
+    contents
   }
 
-  def toGridIndex(row: Row, col: Col): Int =
-    Board.Size * row.index + col.index
-}
-final class Board {
-  def at(row: Row, col: Col): Option[Piece] =
-    grid(Board.toGridIndex(row, col))
+  def put(square: Square, piece: Piece): Unit = put(square.row, square.col, piece)
+  def put(row: Row, col: Col, piece: Piece): Unit = this(row, col) = Some(piece)
 
-  def take(row: Row, col: Col): Option[Piece] =
-    take(Board.toGridIndex(row, col))
-
-  def put(row: Row, col: Col, piece: Piece): Option[Piece] =
-    put(Board.toGridIndex(row, col), piece)
-
-  def isFree(row: Row, col: Col): Boolean = at(row, col).isEmpty
-  def isOccupied(row: Row, col: Col): Boolean = !isFree(row, col)
-
-  def copy(source: Board): Unit =
-    source.grid.copyToArray(this.grid)
+  def copy(source: Board): Unit = this.grid.copy(source.grid)
 
   override def clone: Board = {
     val result = new Board
     result.copy(this)
     result
   }
+
   override def toString: String = {
     var result = ""
-    for (Square(row, col) <- Board.squares) {
-      result += (at(row, col) match {
+    for (Square(row, col) <- Grid.squares) {
+      result += (this(row, col) match {
         case Some(Piece(White, kind)) => kind.name(0).toUpper
         case Some(Piece(Black, kind)) => kind.name(0).toLower
         case None => "."
@@ -49,17 +40,5 @@ final class Board {
     result
   }
 
-  private def take(index: Int): Option[Piece] = {
-    val contents = grid(index)
-    grid(index) = None
-    contents
-  }
-  private def put(index: Int, piece: Piece): Option[Piece] = {
-    val previousContents = grid(index)
-    grid(index) = Some(piece)
-    previousContents
-  }
-
-  private val grid =
-    Array.fill[Option[Piece]](Board.SquareCount)(None)
+  val grid = new ArrayGrid[Option[Piece]](None)
 }
