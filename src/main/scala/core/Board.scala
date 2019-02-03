@@ -1,26 +1,35 @@
 package core
 
-import CoordinateConversion.{intToRow, intToCol}
-
 object Board {
   val Size = 8
+  val SquareCount: Int = Size * Size
 
   def squares: Iterator[Square] = {
+    import CoordinateConversion.{intToRow, intToCol}
     for {
       row <- (0 until Board.Size).iterator
       col <- (0 until Board.Size).iterator
     } yield Square(row, col)
   }
+
+  def toGridIndex(row: Row, col: Col): Int =
+    Board.Size * row.index + col.index
 }
 final class Board {
-  def at(row: Row, col: Col): Option[Piece] = at(toGridIndex(row, col))
-  def take(row: Row, col: Col): Option[Piece] = take(toGridIndex(row, col))
-  def put(row: Row, col: Col, piece: Piece): Option[Piece] = put(toGridIndex(row, col), piece)
+  def at(row: Row, col: Col): Option[Piece] =
+    grid(Board.toGridIndex(row, col))
+
+  def take(row: Row, col: Col): Option[Piece] =
+    take(Board.toGridIndex(row, col))
+
+  def put(row: Row, col: Col, piece: Piece): Option[Piece] =
+    put(Board.toGridIndex(row, col), piece)
 
   def isFree(row: Row, col: Col): Boolean = at(row, col).isEmpty
   def isOccupied(row: Row, col: Col): Boolean = !isFree(row, col)
 
-  def copy(source: Board): Unit = source.grid.copyToArray(this.grid)
+  def copy(source: Board): Unit =
+    source.grid.copyToArray(this.grid)
 
   override def clone: Board = {
     val result = new Board
@@ -40,9 +49,6 @@ final class Board {
     result
   }
 
-  private def toGridIndex(row: Row, col: Col): Int = Board.Size * row.index + col.index
-
-  private def at(index: Int): Option[Piece] = grid(index)
   private def take(index: Int): Option[Piece] = {
     val contents = grid(index)
     grid(index) = None
@@ -54,5 +60,6 @@ final class Board {
     previousContents
   }
 
-  private val grid = Array.fill[Option[Piece]](Board.Size * Board.Size)(None)
+  private val grid =
+    Array.fill[Option[Piece]](Board.SquareCount)(None)
 }
