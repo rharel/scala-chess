@@ -5,16 +5,11 @@ import CoordinateConversion.{intToRow, intToCol}
 object Board {
   val Size = 8
 
-  def squares: Iterator[Square] = squareList.iterator
-
-  private val squareList: List[Square] = {
-    var result = List.empty[Square]
-    for (row <- 0 until Board.Size) {
-      for (col <- 0 until Board.Size) {
-        result = result :+ Square(row, col)
-      }
-    }
-    result
+  def squares: Iterator[Square] = {
+    for {
+      row <- (0 until Board.Size).iterator
+      col <- (0 until Board.Size).iterator
+    } yield Square(row, col)
   }
 }
 final class Board {
