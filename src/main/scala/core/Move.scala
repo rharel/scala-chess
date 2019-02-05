@@ -2,8 +2,8 @@ package core
 
 sealed trait Move
 
-final case class SimpleMove(source: Square, target: Square) extends Move {
-  override def toString = s"$source => $target"
+final case class SimpleMove(origin: Square, target: Square) extends Move {
+  override def toString = s"$origin => $target"
 }
 final case class EnPassant(col: Col) extends Move {
   override def toString = s"en passant at $col"
