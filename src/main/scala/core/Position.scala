@@ -8,8 +8,26 @@ final class Position(grid: Grid[Option[Piece]]) {
   def isFree(square: Square): Boolean = this(square).isEmpty
   def isOccupied(square: Square): Boolean = !isFree(square)
 
-  def findPawnMovesFrom(player: PieceColor, origin: Square): Iterator[SimpleMove] = {
-    throw new NotImplementedError()
+  def findPawnMovesFrom(player: PieceColor, origin: Square): Iterator[SimpleMove] ={
+    val targets = ListBuffer.empty[Square]
+    val dRow = Rules.getPawnMarchDirection(player)
+    val oneStep = (1 * dRow, 0)
+    if (origin +? oneStep && isFree(origin + oneStep)) {
+      targets += origin + oneStep
+    }
+    if (origin.row == Rules.getPawnRow(player)) {
+      val twoStep = (2 * dRow, 0)
+      if (origin +? twoStep && isFree(origin + twoStep)) {
+        targets += origin + twoStep
+      }
+    }
+    val captureSteps = Iterator[(Int, Int)]((dRow, -1), (dRow, +1))
+    for (step <- captureSteps) {
+      if (origin +? step && isHostile(origin + step, player)) {
+        targets += origin + step
+      }
+    }
+    targets.toIterator.map(target => SimpleMove(origin, target))
   }
   def findKnightMovesFrom(player: PieceColor, origin: Square): Iterator[SimpleMove] = {
     val offsets = Iterator[(Int, Int)](
@@ -46,13 +64,11 @@ final class Position(grid: Grid[Option[Piece]]) {
       offset: (Int, Int)): Iterator[Square] = {
     val path = ListBuffer.empty[Square]
     var square = origin
-    while (square +? offset &&
-           isFree(square + offset)) {
+    while (square +? offset && isFree(square + offset)) {
       square += offset
       path += square
     }
-    if (square +? offset &&
-        isHostile(square + offset, player)) {
+    if (square +? offset && isHostile(square + offset, player)) {
       path += square + offset
     }
     path.toIterator
