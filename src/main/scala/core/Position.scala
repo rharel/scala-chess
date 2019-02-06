@@ -8,7 +8,7 @@ final class Position(grid: Grid[Option[Piece]]) {
   def isFree(square: Square): Boolean = this(square).isEmpty
   def isOccupied(square: Square): Boolean = !isFree(square)
 
-  def findPawnMovesFrom(player: PieceColor, origin: Square): Iterator[SimpleMove] ={
+  def findPawnMovesFrom(player: Player, origin: Square): Iterator[SimpleMove] ={
     val targets = ListBuffer.empty[Square]
     val dRow = Rules.getPawnMarchDirection(player)
     val oneStep = (1 * dRow, 0)
@@ -29,7 +29,7 @@ final class Position(grid: Grid[Option[Piece]]) {
     }
     targets.toIterator.map(target => SimpleMove(origin, target))
   }
-  def findKnightMovesFrom(player: PieceColor, origin: Square): Iterator[SimpleMove] = {
+  def findKnightMovesFrom(player: Player, origin: Square): Iterator[SimpleMove] = {
     val offsets = Iterator[(Int, Int)](
       (-1, -2), (-1, +2), (+1, -2), (+1, +2),
       (-2, -1), (-2, +1), (+2, -1), (+2, +1))
@@ -38,30 +38,30 @@ final class Position(grid: Grid[Option[Piece]]) {
               notFriendly(origin + offset, player))
       .map(offset => SimpleMove(origin, origin + offset))
   }
-  def findBishopMovesFrom(player: PieceColor, origin: Square): Iterator[SimpleMove] = {
+  def findBishopMovesFrom(player: Player, origin: Square): Iterator[SimpleMove] = {
     val directions = Iterator[(Int, Int)]((-1, -1), (-1, +1), (+1, -1), (+1, +1))
     directions
       .flatMap(direction => rayCast(player, origin, direction))
       .map(target => SimpleMove(origin, target))
   }
-  def findRookMovesFrom(player: PieceColor, origin: Square): Iterator[SimpleMove] = {
+  def findRookMovesFrom(player: Player, origin: Square): Iterator[SimpleMove] = {
     val directions = Iterator[(Int, Int)]((0, -1), (0, +1), (-1, 0), (+1, 0))
     directions
       .flatMap(direction => rayCast(player, origin, direction))
       .map(target => SimpleMove(origin, target))
   }
-  def findQueenMovesFrom(player: PieceColor, origin: Square): Iterator[SimpleMove] = {
+  def findQueenMovesFrom(player: Player, origin: Square): Iterator[SimpleMove] = {
     findBishopMovesFrom(player, origin) ++
     findRookMovesFrom(player, origin)
   }
-  def findKingMovesFrom(player: PieceColor, origin: Square): Iterator[SimpleMove] = {
+  def findKingMovesFrom(player: Player, origin: Square): Iterator[SimpleMove] = {
     throw new NotImplementedError()
   }
 
   private def rayCast(
-      player: PieceColor,
-      origin: Square,
-      offset: (Int, Int)): Iterator[Square] = {
+     player: Player,
+     origin: Square,
+     offset: (Int, Int)): Iterator[Square] = {
     val path = ListBuffer.empty[Square]
     var square = origin
     while (square +? offset && isFree(square + offset)) {
@@ -74,19 +74,19 @@ final class Position(grid: Grid[Option[Piece]]) {
     path.toIterator
   }
 
-  private def isFriendly(square: Square, player: PieceColor): Boolean =
+  private def isFriendly(square: Square, player: Player): Boolean =
     this(square) match {
-      case Some(Piece(color, _)) => player == color
+      case Some(Piece(owner, _)) => player == owner
       case None => false
     }
-  private def notFriendly(square: Square, player: PieceColor): Boolean =
+  private def notFriendly(square: Square, player: Player): Boolean =
     !isFriendly(square, player)
 
-  private def isHostile(square: Square, player: PieceColor): Boolean =
+  private def isHostile(square: Square, player: Player): Boolean =
     this(square) match {
-      case Some(Piece(color, _)) => player != color
+      case Some(Piece(owner, _)) => player != owner
       case None => false
     }
-  private def notHostile(square: Square, player: PieceColor): Boolean =
+  private def notHostile(square: Square, player: Player): Boolean =
     !isHostile(square, player)
 }

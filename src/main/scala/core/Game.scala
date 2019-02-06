@@ -2,7 +2,7 @@ package core
 
 final class Game {
   def moves: List[Move] = throw new NotImplementedError()
-  def playerToMove: PieceColor = throw new NotImplementedError()
+  def playerToMove: Player = throw new NotImplementedError()
 
   def result: Option[GameResult] = throw new NotImplementedError()
   def isOver: Boolean = result.isDefined
