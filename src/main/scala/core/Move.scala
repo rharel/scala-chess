@@ -2,14 +2,11 @@ package core
 
 sealed trait Move
 
-final case class SimpleMove(origin: Square, target: Square) extends Move {
+final case class RegularMove(origin: Square, target: Square) extends Move {
   override def toString = s"$origin => $target"
 }
-final case class EnPassant(col: Col) extends Move {
-  override def toString = s"en passant at $col"
-}
-final case class Promotion(col: Col, kind: PieceKind) extends Move {
-  override def toString = s"promotion at $col to $kind"
+final case class Promotion(col: Col, target: PromotionTarget) extends Move {
+  override def toString = s"promotion at $col to $target"
 }
 case object KingsideCastle extends Move {
   override def toString = "kingside castle"

@@ -1,5 +1,11 @@
 package core
 
+object Player {
+  def oppositeTo(player: Player): Player = player match {
+    case Black => White
+    case White => Black
+  }
+}
 sealed trait Player {
   val name: String
   override def toString: String = name
