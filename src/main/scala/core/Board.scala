@@ -21,7 +21,7 @@ final class Board {
 
   override def toString: String = {
     var result = ""
-    for (square <- Grid.squares) {
+    for (square <- Grid.Squares) {
       result += (this(square) match {
         case Some(Piece(White, kind)) => kind.name(0).toUpper
         case Some(Piece(Black, kind)) => kind.name(0).toLower
