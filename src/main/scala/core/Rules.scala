@@ -1,7 +1,11 @@
 package core
 
 object Rules {
-  def getPromotionRow(player: Player): Row = getPawnRow(Player.oppositeTo(player))
+  def getPromotionEdgeRow(player: Player): Row =
+    getPawnRow(Player.oppositeTo(player))
+  def getPromotionRow(player: Player): Row =
+    getPromotionEdgeRow(player) + getPawnMarchDirection(player)
+
   def getPawnRow(player: Player): Row = player match {
     case Black => Row.fromIndex(Grid.Size - 2)
     case White => Row.fromIndex(1)
