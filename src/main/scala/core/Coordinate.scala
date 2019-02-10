@@ -15,7 +15,6 @@ object Row {
   val All: Iterable[Row] =
     (Coordinate.First to Coordinate.Last)
       .map(value => Row.fromIndex(value))
-      .toList
 
   def fromIndex(index: Int): Row = {
     assert(Coordinate.isValid(index))
@@ -50,7 +49,6 @@ object Col {
   val All: Iterable[Col] =
     (Coordinate.First to Coordinate.Last)
       .map(value => Col.fromIndex(value))
-      .toList
 
   def fromIndex(index: Int): Col = {
     assert(Coordinate.isValid(index))
