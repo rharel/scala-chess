@@ -14,6 +14,8 @@ final class Position(grid: Grid[Option[Piece]], context: PositionContext) {
   def canKingsideCastle(player: Player): Boolean = throw new NotImplementedError()
   def canQueensideCastle(player: Player): Boolean = throw new NotImplementedError()
 
+  def isLegalMove(move: Move): Boolean = throw new NotImplementedError()
+
   def findMovesFor(player: Player): Iterator[Move] = {
     if (!context.playerToMove.contains(player)) { List.empty[Move].iterator }
 
