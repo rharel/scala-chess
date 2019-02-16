@@ -8,12 +8,12 @@ object ArrayGrid {
 }
 final class ArrayGrid[A:ClassTag](fillValue: A) extends Grid[A] {
   def apply(square: Square): A =
-    data(ArrayGrid.toIndex(square))
+    _data(ArrayGrid.toIndex(square))
   def update(square: Square, value: A): Unit =
-    data(ArrayGrid.toIndex(square)) = value
+    _data(ArrayGrid.toIndex(square)) = value
 
   def copy(source: ArrayGrid[A]): Unit =
-    source.data.copyToArray(this.data)
+    source._data.copyToArray(this._data)
 
   override def clone: ArrayGrid[A] = {
     val result = new ArrayGrid[A](fillValue)
@@ -21,6 +21,6 @@ final class ArrayGrid[A:ClassTag](fillValue: A) extends Grid[A] {
     result
   }
 
-  val data: Array[A] =
+  private val _data: Array[A] =
     Array.fill[A](Grid.SquareCount)(fillValue)
 }
