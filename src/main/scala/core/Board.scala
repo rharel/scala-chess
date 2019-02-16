@@ -1,5 +1,20 @@
 package core
 
+object Board{
+  def fromString(source: String): Board = {
+    val result = new Board()
+    source.iterator
+      .map(char => Piece.fromChar(char))
+      .collect{case option: Option[Piece] if option.isDefined => option.get}
+      .take(Grid.SquareCount)
+      .zip(Grid.Squares.iterator)
+      .foreach[Unit](deployment => {
+        val (piece, square) = deployment
+        result.put(square, piece)
+      })
+    result
+  }
+}
 final class Board {
   def apply(square: Square): Option[Piece] = grid(square)
   def update(square: Square, value: Option[Piece]): Unit = grid(square) = value
@@ -23,8 +38,7 @@ final class Board {
     var result = ""
     for (square <- Grid.Squares) {
       result += (this(square) match {
-        case Some(Piece(White, kind)) => kind.name(0).toUpper
-        case Some(Piece(Black, kind)) => kind.name(0).toLower
+        case Some(piece) => piece.toChar
         case None => "."
       })
       if (square.col.isLast) { result += "\n" }

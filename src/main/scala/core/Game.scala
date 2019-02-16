@@ -17,7 +17,16 @@ final class Game {
 
   override def toString = _history.map(action => action.toString).mkString(", ")
 
-  private val _board: Board = new Board()
+  private val _board: Board = Board.fromString(
+    "RNBQKBNR" +
+    "PPPPPPPP" +
+    "........" +
+    "........" +
+    "........" +
+    "........" +
+    "pppppppp" +
+    "rnbqkbnr"
+  )
   private val _history: Stack[PlayerAction] = new Stack[PlayerAction]()
 
   private var _positionContext: PositionContext = new PositionContext()
