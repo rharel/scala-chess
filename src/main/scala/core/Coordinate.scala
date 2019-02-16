@@ -32,9 +32,6 @@ final case class Row private (index: Int) extends AnyVal {
   def +?(offset: Int): Boolean = Coordinate.isValid(index + offset)
   def -?(offset: Int): Boolean = this +? (-offset)
 
-  def ==(other: Row): Boolean = this.index == other.index
-  def !=(other: Row): Boolean = !(this == other)
-
   def <(other: Row): Boolean = this.index < other.index
   def <=(other: Row): Boolean = !(other < this)
   def >(other: Row): Boolean = other < this
@@ -65,9 +62,6 @@ final case class Col private (index: Int) extends AnyVal {
 
   def +?(offset: Int): Boolean = Coordinate.isValid(index + offset)
   def -?(offset: Int): Boolean = this +? (-offset)
-
-  def ==(other: Col): Boolean = this.index == other.index
-  def !=(other: Col): Boolean = !(this == other)
 
   def <(other: Col): Boolean = this.index < other.index
   def <=(other: Col): Boolean = !(other < this)
