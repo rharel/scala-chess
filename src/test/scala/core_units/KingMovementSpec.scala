@@ -7,7 +7,7 @@ import org.scalatest._
 class KingMovementSpec extends FlatSpec with Matchers {
   "A king" should "be able to move one square in each direction when free" in {
     val grid = new ArrayGrid[Option[Piece]](None)
-    val position = new Position(grid, new PositionContext())
+    val position = new Position(grid, PositionContext.Initial)
 
     val moves = position.findKingMovesFrom(Square(3, 3), White).toSet
     moves.size should be (8)
@@ -22,7 +22,7 @@ class KingMovementSpec extends FlatSpec with Matchers {
   }
   it should "not be able to move beyond the edge of the board" in {
     val grid = new ArrayGrid[Option[Piece]](None)
-    val position = new Position(grid, new PositionContext())
+    val position = new Position(grid, PositionContext.Initial)
 
     var moves = position.findKingMovesFrom(Square(0, 0), White).toSet
     moves.size should be (3)
@@ -38,7 +38,7 @@ class KingMovementSpec extends FlatSpec with Matchers {
   }
   it should "be able to capture hostile pieces" in {
     val grid = new ArrayGrid[Option[Piece]](None)
-    val position = new Position(grid, new PositionContext())
+    val position = new Position(grid, PositionContext.Initial)
 
     grid(Square(4, 4)) = Some(Piece(Black, Pawn))
 
@@ -48,7 +48,7 @@ class KingMovementSpec extends FlatSpec with Matchers {
   }
   it should "not be able to move onto friendly pieces" in {
     val grid = new ArrayGrid[Option[Piece]](None)
-    val position = new Position(grid, new PositionContext())
+    val position = new Position(grid, PositionContext.Initial)
 
     grid(Square(4, 4)) = Some(Piece(White, Pawn))
 
