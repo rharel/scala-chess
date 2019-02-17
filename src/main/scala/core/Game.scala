@@ -15,20 +15,21 @@ final class Game {
 
   def isLegalAction(action: PlayerAction): Boolean = inProgress && (action match {
     case Play(move) => position.isLegalMove(move)
-    case OfferDraw => true
-    case Resign => lastAction.contains(Play(_))
+    case OfferDraw | Resign => lastAction.contains(Play(_))
+    case AcceptDraw => lastAction.contains(OfferDraw)
   })
+  def notLegalAction(action: PlayerAction): Boolean = !isLegalAction(action)
+
   def submitAction(action: PlayerAction): Boolean = {
-    if (!isLegalAction(action)) { return false }
+    if (notLegalAction(action)) { return false }
     action match {
       case Play(_) => {
         throw new NotImplementedError()
       }
-      case OfferDraw => {
-        if (lastAction.contains(OfferDraw)) {
-          val proposer = activePlayer.get.opponent
-          endWith(DrawAgreement(proposer))
-        }
+      case OfferDraw => {}
+      case AcceptDraw => {
+        val proposer = activePlayer.get.opponent
+        endWith(Draw(proposer))
       }
       case Resign => endWith(Resignation(activePlayer.get))
     }

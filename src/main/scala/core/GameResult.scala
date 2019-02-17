@@ -11,7 +11,7 @@ final case class Resignation(loser: Player) extends GameResult {
 final case class Stalemate(playerToMove: Player) extends GameResult {
   override def toString = s"stalemate for $playerToMove"
 }
-final case class DrawAgreement(proposer: Player) extends GameResult {
+final case class Draw(proposer: Player) extends GameResult {
   override def toString = s"draw proposed by $proposer"
 }
 case object ThreefoldRepetition extends GameResult {
