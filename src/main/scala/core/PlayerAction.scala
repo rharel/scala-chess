@@ -1,6 +1,7 @@
 package core
 
 sealed trait PlayerAction
+
 final case class Play(move: Move) extends PlayerAction {
   override def toString = move.toString
 }

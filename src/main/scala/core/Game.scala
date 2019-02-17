@@ -23,14 +23,11 @@ final class Game {
   def submitAction(action: PlayerAction): Boolean = {
     if (notLegalAction(action)) { return false }
     action match {
-      case Play(_) => {
-        throw new NotImplementedError()
-      }
-      case OfferDraw => {}
-      case AcceptDraw => {
+      case Play(_) => throw new NotImplementedError()
+      case OfferDraw =>
+      case AcceptDraw =>
         val proposer = activePlayer.get.opponent
         endWith(Draw(proposer))
-      }
       case Resign => endWith(Resignation(activePlayer.get))
     }
     _history.append(action)
@@ -39,7 +36,7 @@ final class Game {
   }
   def undoAction: Boolean = throw new NotImplementedError()
 
-  override def toString: String = _history.map(action => action.toString).mkString(", ")
+  override def toString: String = _history.mkString(", ")
 
   private def endWith(result: GameResult): Unit = {
     assert(inProgress)
