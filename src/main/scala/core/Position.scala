@@ -79,7 +79,7 @@ final class Position(grid: Grid[Option[Piece]], context: PositionContext) {
           moves += RegularMove(origin, target)  // Regular capture.
         }
         else if (context.lastMove.contains(RegularMove(_, target - (dRow, 0))) &&
-                 this(target).contains(Piece(Player.oppositeTo(player), Pawn)) &&
+                 this(target).contains(Piece(player.opponent, Pawn)) &&
                  isFree(target)) {
           moves += RegularMove(origin, target)  // Capture en passant.
         }

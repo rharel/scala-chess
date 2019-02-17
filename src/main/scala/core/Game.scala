@@ -26,14 +26,14 @@ final class Game {
       }
       case OfferDraw => {
         if (lastAction.contains(OfferDraw)) {
-          val proposer = Player.oppositeTo(activePlayer.get)
+          val proposer = activePlayer.get.opponent
           endWith(DrawAgreement(proposer))
         }
       }
       case Resign => endWith(Resignation(activePlayer.get))
     }
     _history.append(action)
-    _activePlayer = _activePlayer.map(player => Player.oppositeTo(player))
+    _activePlayer = _activePlayer.map(player => player.opponent)
     true
   }
   def undoAction: Boolean = throw new NotImplementedError()

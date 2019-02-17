@@ -14,7 +14,7 @@ object Rules {
   def getEnPassantRow(player: Player): Row =
     getBaseRow(player) + getPawnMarchDirection(player) * 4
   def getPromotionEdgeRow(player: Player): Row =
-    getPawnRow(Player.oppositeTo(player))
+    getPawnRow(player.opponent)
   def getPromotionRow(player: Player): Row =
-    getBaseRow(Player.oppositeTo(player))
+    getBaseRow(player.opponent)
 }
