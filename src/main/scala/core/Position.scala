@@ -5,8 +5,8 @@ import scala.collection.mutable.ListBuffer
 final class Position(grid: Grid[Option[Piece]], context: PositionContext) {
   def apply(square: Square): Option[Piece] = grid(square)
 
-  def isFree(square: Square): Boolean = this(square).isEmpty
-  def isOccupied(square: Square): Boolean = !isFree(square)
+  def isEmpty(square: Square): Boolean = this(square).isEmpty
+  def isOccupied(square: Square): Boolean = !isEmpty(square)
 
   def isChecked(player: Player): Boolean = throw new NotImplementedError()
   def isMated(player: Player): Boolean = throw new NotImplementedError()
@@ -14,7 +14,8 @@ final class Position(grid: Grid[Option[Piece]], context: PositionContext) {
   def canKingsideCastle(player: Player): Boolean = throw new NotImplementedError()
   def canQueensideCastle(player: Player): Boolean = throw new NotImplementedError()
 
-  def isLegalMove(move: Move): Boolean = throw new NotImplementedError()
+  def isLegal(move: Move): Boolean = throw new NotImplementedError()
+  def isIllegal(move: Move): Boolean = !isLegal(move)
 
   def findMovesFor(player: Player): Iterator[Move] = {
     if (!context.playerToMove.contains(player)) { List.empty[Move].iterator }
@@ -44,7 +45,7 @@ final class Position(grid: Grid[Option[Piece]], context: PositionContext) {
     val promotionRow = Rules.getPromotionRow(player)
     for (col <- Col.All) {
       val target = Square(promotionRow, col)
-      if (isFree(target) && isFriendlyPawn(edgeRow, col)) {
+      if (isEmpty(target) && isFriendlyPawn(edgeRow, col)) {
         promotions ++ Promotion.allFor(col, col)
       }
       else if (isHostile(target, player)) {
@@ -62,12 +63,12 @@ final class Position(grid: Grid[Option[Piece]], context: PositionContext) {
     val moves = ListBuffer.empty[RegularMove]
     val dRow = Rules.getPawnMarchDirection(player)
     val oneStep = (dRow, 0)
-    if (origin +? oneStep && isFree(origin + oneStep)) {
+    if (origin +? oneStep && isEmpty(origin + oneStep)) {
       moves += RegularMove(origin, origin + oneStep)
     }
     if (origin.row == Rules.getPawnRow(player)) {
       val twoStep = (2 * dRow, 0)
-      if (origin +? twoStep && isFree(origin + twoStep)) {
+      if (origin +? twoStep && isEmpty(origin + twoStep)) {
         moves += RegularMove(origin, origin + twoStep)
       }
     }
@@ -80,7 +81,7 @@ final class Position(grid: Grid[Option[Piece]], context: PositionContext) {
         }
         else if (context.lastMove.contains(RegularMove(_, target - (dRow, 0))) &&
                  this(target).contains(Piece(player.opponent, Pawn)) &&
-                 isFree(target)) {
+                 isEmpty(target)) {
           moves += RegularMove(origin, target)  // Capture en passant.
         }
       })
@@ -90,7 +91,7 @@ final class Position(grid: Grid[Option[Piece]], context: PositionContext) {
     Iterator[(Int, Int)](
       (-1, -2), (-1, +2), (+1, -2), (+1, +2),
       (-2, -1), (-2, +1), (+2, -1), (+2, +1))
-      .filter(offset => origin +? offset && notFriendly(origin + offset, player))
+      .filter(offset => origin +? offset && isHostileOrEmpty(origin + offset, player))
       .map(offset => RegularMove(origin, origin + offset))
   }
   def findBishopMovesFrom(origin: Square, player: Player): Iterator[RegularMove] = {
@@ -112,7 +113,7 @@ final class Position(grid: Grid[Option[Piece]], context: PositionContext) {
       (-1, -1), (-1,  0), (-1, +1),
       ( 0, -1),           ( 0, +1),
       (+1, -1), (+1,  0), (+1, +1))
-      .filter(offset => origin +? offset && notFriendly(origin + offset, player))
+      .filter(offset => origin +? offset && isHostileOrEmpty(origin + offset, player))
       .map(offset => RegularMove(origin, origin + offset))
   }
 
@@ -123,7 +124,7 @@ final class Position(grid: Grid[Option[Piece]], context: PositionContext) {
 
     val path = ListBuffer.empty[Square]
     var square = origin
-    while (square +? direction && isFree(square + direction)) {
+    while (square +? direction && isEmpty(square + direction)) {
       square += direction
       path += square
     }
@@ -138,10 +139,8 @@ final class Position(grid: Grid[Option[Piece]], context: PositionContext) {
       case Some(Piece(owner, _)) => player == owner
       case None => false
     }
-  private def notFriendly(square: Square, player: Player): Boolean =
-    !isFriendly(square, player)
   private def isHostile(square: Square, player: Player): Boolean =
-    isOccupied(square) && notFriendly(square, player)
-  private def notHostile(square: Square, player: Player): Boolean =
-    !isHostile(square, player)
+    isOccupied(square) && isHostileOrEmpty(square, player)
+  private def isHostileOrEmpty(square: Square, player: Player): Boolean =
+    !isFriendly(square, player)
 }

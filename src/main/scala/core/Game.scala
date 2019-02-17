@@ -13,15 +13,15 @@ final class Game {
 
   def position: Position = new Position(_board.grid, _positionContext)
 
-  def isLegalAction(action: PlayerAction): Boolean = inProgress && (action match {
-    case Play(move) => position.isLegalMove(move)
+  def isLegal(action: PlayerAction): Boolean = inProgress && (action match {
+    case Play(move) => position.isLegal(move)
     case OfferDraw | Resign => lastAction.contains(Play(_))
     case AcceptDraw => lastAction.contains(OfferDraw)
   })
-  def notLegalAction(action: PlayerAction): Boolean = !isLegalAction(action)
+  def isIllegal(action: PlayerAction): Boolean = !isLegal(action)
 
   def submitAction(action: PlayerAction): Boolean = {
-    if (notLegalAction(action)) { return false }
+    if (isIllegal(action)) { return false }
     action match {
       case Play(_) => throw new NotImplementedError()
       case OfferDraw =>
