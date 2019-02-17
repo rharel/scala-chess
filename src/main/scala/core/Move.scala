@@ -3,6 +3,7 @@ package core
 sealed trait Move
 
 final case class RegularMove(origin: Square, target: Square) extends Move {
+  assert(origin != target)
   override def toString = s"$origin => $target"
 }
 object Promotion {

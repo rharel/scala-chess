@@ -2,7 +2,7 @@ package core
 
 object Board{
   def fromString(source: String): Board = {
-    val result = new Board()
+    val result = new Board
     source.iterator
       .map(char => Piece.fromChar(char))
       .collect{case option: Option[Piece] if option.isDefined => option.get}

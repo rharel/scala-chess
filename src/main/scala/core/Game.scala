@@ -41,6 +41,7 @@ final class Game {
   override def toString: String = _history.map(action => action.toString).mkString(", ")
 
   private def endWith(result: GameResult): Unit = {
+    assert(inProgress)
     _result = Some(result)
     _activePlayer = None
     _positionContext = PositionContext(
