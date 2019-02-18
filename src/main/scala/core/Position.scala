@@ -14,14 +14,18 @@ final class Position(grid: Grid[Option[Piece]], context: PositionContext) {
   def canKingsideCastle(player: Player): Boolean = throw new NotImplementedError()
   def canQueensideCastle(player: Player): Boolean = throw new NotImplementedError()
 
-  def isLegal(move: Move): Boolean = throw new NotImplementedError()
+  def isLegal(move: Move): Boolean = context.playerToMove.isDefined && (move match {
+    case _: RegularMove |
+         _: Promotion => throw new NotImplementedError()
+    case KingsideCastle => canKingsideCastle(context.playerToMove.get)
+    case QueensideCastle => canQueensideCastle(context.playerToMove.get)
+  })
   def isIllegal(move: Move): Boolean = !isLegal(move)
 
   def findMovesFor(player: Player): Iterator[Move] = {
-    if (!context.playerToMove.contains(player)) { List.empty[Move].iterator }
+    if (!context.playerToMove.contains(player)) { return Iterator.empty }
+    if (isChecked(player)) { return findCheckBreakingMovesFor(player) }
 
-    (if (canKingsideCastle(player)) Iterator(KingsideCastle) else List.empty[Move].iterator) ++
-    (if (canQueensideCastle(player)) Iterator(QueensideCastle) else List.empty[Move].iterator) ++
     findPromotionsFor(player) ++
     Grid.Squares
       .flatMap(square => this(square) match {
@@ -34,39 +38,45 @@ final class Position(grid: Grid[Option[Piece]], context: PositionContext) {
           case King => findKingMovesFrom(square, player)
         }
         case None => Iterator.empty
-      })
+      }) ++ (
+        if (context.forbiddenToCastle(player))
+          Iterator.empty
+        else
+          Iterator[Move](KingsideCastle, QueensideCastle)
+      )
   }
   def findPromotionsFor(player: Player): Iterator[Promotion] = {
     def isFriendlyPawn(row: Row, col: Col): Boolean = {
       this(Square(row, col)).contains(Piece(player, Pawn))
     }
     val promotions = ListBuffer.empty[Promotion]
-    val edgeRow = Rules.getPromotionEdgeRow(player)
-    val promotionRow = Rules.getPromotionRow(player)
     for (col <- Col.All) {
-      val target = Square(promotionRow, col)
-      if (isEmpty(target) && isFriendlyPawn(edgeRow, col)) {
+      val target = Square(player.promotionRow, col)
+      if (isEmpty(target) && isFriendlyPawn(player.promotionEdgeRow, col)) {
         promotions ++ Promotion.allFor(col, col)
       }
       else if (isHostile(target, player)) {
         promotions ++ Iterator[Int](-1, 1)
-          .filter(dCol => col +? dCol && isFriendlyPawn(edgeRow, col + dCol))
+          .filter(dCol => col +? dCol && isFriendlyPawn(player.promotionEdgeRow, col + dCol))
           .flatMap(dCol => Promotion.allFor(col + dCol, target.col))
       }
     }
     promotions.iterator
   }
+  def findCheckBreakingMovesFor(player: Player): Iterator[RegularMove] =
+    throw new NotImplementedError()
+
   def findPawnMovesFrom(origin: Square, player: Player): Iterator[RegularMove] ={
-    if (origin.row == Rules.getPromotionEdgeRow(player)) {
+    if (origin.row == player.promotionEdgeRow) {
       List.empty[Move].iterator
     }
     val moves = ListBuffer.empty[RegularMove]
-    val dRow = Rules.getPawnMarchDirection(player)
+    val dRow = player.marchDirection
     val oneStep = (dRow, 0)
     if (origin +? oneStep && isEmpty(origin + oneStep)) {
       moves += RegularMove(origin, origin + oneStep)
     }
-    if (origin.row == Rules.getPawnRow(player)) {
+    if (origin.row == player.pawnRow) {
       val twoStep = (2 * dRow, 0)
       if (origin +? twoStep && isEmpty(origin + twoStep)) {
         moves += RegularMove(origin, origin + twoStep)

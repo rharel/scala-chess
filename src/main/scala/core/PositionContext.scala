@@ -14,7 +14,7 @@ final case class PositionContext(
     blackForbiddenToCastle: Boolean,
     whiteForbiddenToCastle: Boolean) {
 
-  def mayCastle(player: Player): Boolean = player match {
+  def forbiddenToCastle(player: Player): Boolean = player match {
     case Black => blackForbiddenToCastle
     case White => whiteForbiddenToCastle
   }
