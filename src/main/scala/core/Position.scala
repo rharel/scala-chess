@@ -24,8 +24,7 @@ final class Position(grid: Grid[Option[Piece]], context: PositionContext) {
 
   def isChecked(player: Player): Boolean =
     findPiece(Piece(player, King))
-      .map(square => isThreatenedBy(square, player.opponent))
-      .isDefined
+      .exists(square => isThreatenedBy(square, player.opponent))
   def isCheckedAfter(player: Player, move: Move): Boolean = throw new NotImplementedError()
 
   def isMated(player: Player): Boolean =
