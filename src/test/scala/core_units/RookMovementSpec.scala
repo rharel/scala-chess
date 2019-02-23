@@ -9,7 +9,7 @@ class RookMovementSpec extends FlatSpec with Matchers {
     val grid = new ArrayGrid[Option[Piece]](None)
     val position = new Position(grid, PositionContext.Initial)
 
-    val moves = position.findRookMovesFrom(Square(3, 3), White).toSet
+    val moves = position.potentialRookMovesFrom(Square(3, 3), White).toSet
     moves.size should be (14)
     moves contains RegularMove(Square(3, 3), Square(3, 0)) should be (true)  // First edge
     moves contains RegularMove(Square(3, 3), Square(3, 1)) should be (true)
@@ -32,7 +32,7 @@ class RookMovementSpec extends FlatSpec with Matchers {
 
     grid(Square(3, 5)) = Some(Piece(Black, Pawn))
 
-    val moves = position.findRookMovesFrom(Square(3, 3), White).toSet
+    val moves = position.potentialRookMovesFrom(Square(3, 3), White).toSet
     moves.size should be (12)
     moves contains RegularMove(Square(3, 3), Square(3, 5)) should be (true)
     moves contains RegularMove(Square(3, 3), Square(3, 6)) should be (false)
@@ -44,7 +44,7 @@ class RookMovementSpec extends FlatSpec with Matchers {
 
     grid(Square(3, 5)) = Some(Piece(White, Pawn))
 
-    val moves = position.findRookMovesFrom(Square(3, 3), White).toSet
+    val moves = position.potentialRookMovesFrom(Square(3, 3), White).toSet
     moves.size should be (11)
     moves contains RegularMove(Square(3, 3), Square(3, 5)) should be (false)
     moves contains RegularMove(Square(3, 3), Square(3, 6)) should be (false)

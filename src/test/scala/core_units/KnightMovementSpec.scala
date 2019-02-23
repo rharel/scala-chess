@@ -9,7 +9,7 @@ class KnightMovementSpec extends FlatSpec with Matchers {
     val grid = new ArrayGrid[Option[Piece]](None)
     val position = new Position(grid, PositionContext.Initial)
 
-    val moves = position.findKnightMovesFrom(Square(3, 3), White).toSet
+    val moves = position.potentialKnightMovesFrom(Square(3, 3), White).toSet
     moves.size should be (8)
     moves contains RegularMove(Square(3, 3), Square(1, 2)) should be (true)
     moves contains RegularMove(Square(3, 3), Square(1, 4)) should be (true)
@@ -24,12 +24,12 @@ class KnightMovementSpec extends FlatSpec with Matchers {
     val grid = new ArrayGrid[Option[Piece]](None)
     val position = new Position(grid, PositionContext.Initial)
 
-    var moves = position.findKnightMovesFrom(Square(0, 0), White).toSet
+    var moves = position.potentialKnightMovesFrom(Square(0, 0), White).toSet
     moves.size should be (2)
     moves contains RegularMove(Square(0, 0), Square(1, 2)) should be (true)
     moves contains RegularMove(Square(0, 0), Square(2, 1)) should be (true)
 
-    moves = position.findKnightMovesFrom(Square(7, 7), White).toSet
+    moves = position.potentialKnightMovesFrom(Square(7, 7), White).toSet
     moves.size should be (2)
     moves contains RegularMove(Square(7, 7), Square(6, 5)) should be (true)
     moves contains RegularMove(Square(7, 7), Square(5, 6)) should be (true)
@@ -40,7 +40,7 @@ class KnightMovementSpec extends FlatSpec with Matchers {
 
     grid(Square(2, 5)) = Some(Piece(Black, Pawn))
 
-    val moves = position.findKnightMovesFrom(Square(3, 3), White).toSet
+    val moves = position.potentialKnightMovesFrom(Square(3, 3), White).toSet
     moves.size should be (8)
     moves contains RegularMove(Square(3, 3), Square(2, 5)) should be (true)
   }
@@ -50,7 +50,7 @@ class KnightMovementSpec extends FlatSpec with Matchers {
 
     grid(Square(2, 5)) = Some(Piece(White, Pawn))
 
-    val moves = position.findKnightMovesFrom(Square(3, 3), White).toSet
+    val moves = position.potentialKnightMovesFrom(Square(3, 3), White).toSet
     moves.size should be (7)
     moves contains RegularMove(Square(3, 3), Square(2, 5)) should be (false)
   }

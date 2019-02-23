@@ -9,11 +9,11 @@ class QueenMovementSpec extends FlatSpec with Matchers {
     val grid = new ArrayGrid[Option[Piece]](None)
     val position = new Position(grid, PositionContext.Initial)
 
-    val moves = position.findQueenMovesFrom(Square(3, 3), White).toSet
+    val moves = position.potentialQueenMovesFrom(Square(3, 3), White).toSet
 
     moves should be ((
-      position.findBishopMovesFrom(Square(3, 3), White) ++
-      position.findRookMovesFrom(Square(3, 3), White)).toSet)
+      position.potentialBishopMovesFrom(Square(3, 3), White) ++
+      position.potentialRookMovesFrom(Square(3, 3), White)).toSet)
   }
   it should "be able to capture hostile pieces but not move beyond them" in {
     val grid = new ArrayGrid[Option[Piece]](None)
@@ -21,10 +21,10 @@ class QueenMovementSpec extends FlatSpec with Matchers {
 
     grid(Square(3, 5)) = Some(Piece(Black, Pawn))
 
-    val moves = position.findQueenMovesFrom(Square(3, 3), White).toSet
+    val moves = position.potentialQueenMovesFrom(Square(3, 3), White).toSet
     moves should be ((
-      position.findBishopMovesFrom(Square(3, 3), White) ++
-      position.findRookMovesFrom(Square(3, 3), White)).toSet)
+      position.potentialBishopMovesFrom(Square(3, 3), White) ++
+      position.potentialRookMovesFrom(Square(3, 3), White)).toSet)
   }
   it should "not be able to move onto friendly pieces or beyond them" in {
     val grid = new ArrayGrid[Option[Piece]](None)
@@ -32,9 +32,9 @@ class QueenMovementSpec extends FlatSpec with Matchers {
 
     grid(Square(3, 5)) = Some(Piece(White, Pawn))
 
-    val moves = position.findQueenMovesFrom(Square(3, 3), White).toSet
+    val moves = position.potentialQueenMovesFrom(Square(3, 3), White).toSet
     moves should be ((
-      position.findBishopMovesFrom(Square(3, 3), White) ++
-      position.findRookMovesFrom(Square(3, 3), White)).toSet)
+      position.potentialBishopMovesFrom(Square(3, 3), White) ++
+      position.potentialRookMovesFrom(Square(3, 3), White)).toSet)
   }
 }

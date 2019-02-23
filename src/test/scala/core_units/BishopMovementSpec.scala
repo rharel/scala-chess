@@ -9,7 +9,7 @@ class BishopMovementSpec extends FlatSpec with Matchers {
     val grid = new ArrayGrid[Option[Piece]](None)
     val position = new Position(grid, PositionContext.Initial)
 
-    val moves = position.findBishopMovesFrom(Square(3, 3), White).toSet
+    val moves = position.potentialBishopMovesFrom(Square(3, 3), White).toSet
     moves.size should be (13)
     moves contains RegularMove(Square(3, 3), Square(0, 0)) should be (true)  // First diagonal
     moves contains RegularMove(Square(3, 3), Square(1, 1)) should be (true)
@@ -31,7 +31,7 @@ class BishopMovementSpec extends FlatSpec with Matchers {
 
     grid(Square(5, 5)) = Some(Piece(Black, Pawn))
 
-    val moves = position.findBishopMovesFrom(Square(3, 3), White).toSet
+    val moves = position.potentialBishopMovesFrom(Square(3, 3), White).toSet
     moves.size should be (11)
     moves contains RegularMove(Square(3, 3), Square(5, 5)) should be (true)
     moves contains RegularMove(Square(3, 3), Square(6, 6)) should be (false)
@@ -43,7 +43,7 @@ class BishopMovementSpec extends FlatSpec with Matchers {
 
     grid(Square(5, 5)) = Some(Piece(White, Pawn))
 
-    val moves = position.findBishopMovesFrom(Square(3, 3), White).toSet
+    val moves = position.potentialBishopMovesFrom(Square(3, 3), White).toSet
     moves.size should be (10)
     moves contains RegularMove(Square(3, 3), Square(5, 5)) should be (false)
     moves contains RegularMove(Square(3, 3), Square(6, 6)) should be (false)
