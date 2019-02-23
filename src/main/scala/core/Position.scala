@@ -26,6 +26,7 @@ final class Position(grid: Grid[Option[Piece]], context: PositionContext) {
     findPiece(Piece(player, King))
       .map(square => isThreatenedBy(square, player.opponent))
       .isDefined
+  def isCheckedAfter(player: Player, move: Move): Boolean = throw new NotImplementedError()
 
   def isMated(player: Player): Boolean =
     isChecked(player) && findCheckBreakingMovesFor(player).isEmpty
@@ -35,32 +36,33 @@ final class Position(grid: Grid[Option[Piece]], context: PositionContext) {
     !isChecked(player) &&
     player.baseSquares(side).forall(square => isSafeFrom(square, player.opponent))
 
-  def isLegal(move: Move): Boolean = context.playerToMove.isDefined && (move match {
-    case _: RegularMove |
-         _: Promotion => throw new NotImplementedError()
-    case Castle(side) => canCastle(context.playerToMove.get, side)
+  def isLegal(move: Move): Boolean = context.playerToMove.exists(player => {
+    def isLegalFrom(origin: Square): Boolean = {
+      isFriendlyTo(origin, player) &&
+      potentialMovesFrom(origin).contains(move) &&
+      !isCheckedAfter(player, move)
+    }
+    move match {
+      case RegularMove(origin, _) => isLegalFrom(origin)
+      case promotion: Promotion => isLegalFrom(promotion.originFor(player))
+      case Castle(side) => canCastle(player, side)
+    }
   })
   def isIllegal(move: Move): Boolean = !isLegal(move)
+
+  def findCheckBreakingMovesFor(player: Player): Iterator[RegularMove] =
+    throw new NotImplementedError()
 
   def potentialMovesFor(player: Player): Iterator[Move] = {
     if (!context.playerToMove.contains(player)) { return Iterator.empty }
     if (isChecked(player)) { return findCheckBreakingMovesFor(player) }
 
     Grid.Squares.iterator
-      .flatMap(square => this(square) match {
-        case Some(Piece(owner, kind)) if owner == player => kind match {
-          case Pawn => potentialPawnMovesFrom(square, player)
-          case Knight => potentialKnightMovesFrom(square, player)
-          case Bishop => potentialBishopMovesFrom(square, player)
-          case Rook => potentialRookMovesFrom(square, player)
-          case Queen => potentialQueenMovesFrom(square, player)
-          case King => potentialKingMovesFrom(square, player)
-        }
-        case None => Iterator.empty
-      }) ++
+      .flatMap(square => potentialMovesFrom(square)) ++
       Iterator[Move](Castle(Kingside), Castle(Queenside)) ++
       potentialPromotionsFor(player)
   }
+
   def potentialPromotionsFor(player: Player): Iterator[Promotion] = {
     def isFriendlyPawn(row: Row, col: Col): Boolean = {
       this(Square(row, col)).contains(Piece(player, Pawn))
@@ -81,10 +83,19 @@ final class Position(grid: Grid[Option[Piece]], context: PositionContext) {
     }
     promotions.iterator
   }
-  def findCheckBreakingMovesFor(player: Player): Iterator[RegularMove] =
-    throw new NotImplementedError()
 
-  def potentialPawnMovesFrom(origin: Square, player: Player): Iterator[RegularMove] ={
+  def potentialMovesFrom(origin: Square): Iterator[RegularMove] = this(origin).map(piece =>
+    piece.kind match {
+      case Pawn => potentialPawnMovesFrom(origin, piece.owner)
+      case Knight => potentialKnightMovesFrom(origin, piece.owner)
+      case Bishop => potentialBishopMovesFrom(origin, piece.owner)
+      case Rook => potentialRookMovesFrom(origin, piece.owner)
+      case Queen => potentialQueenMovesFrom(origin, piece.owner)
+      case King => potentialKingMovesFrom(origin, piece.owner)
+    }
+  ).getOrElse(Iterator.empty)
+
+  def potentialPawnMovesFrom(origin: Square, player: Player): Iterator[RegularMove] = {
     if (origin.row == player.promotionEdgeRow) {
       return Iterator.empty  // Promotions are generated in a separate method.
     }
@@ -115,6 +126,7 @@ final class Position(grid: Grid[Option[Piece]], context: PositionContext) {
       })
     moves.iterator
   }
+
   def potentialKnightMovesFrom(origin: Square, player: Player): Iterator[RegularMove] = {
     Iterator[(Int, Int)](
       (-1, -2), (-1, +2), (+1, -2), (+1, +2),
@@ -122,20 +134,24 @@ final class Position(grid: Grid[Option[Piece]], context: PositionContext) {
       .filter(offset => origin +? offset && !isFriendlyTo(origin + offset, player))
       .map(offset => RegularMove(origin, origin + offset))
   }
+
   def potentialBishopMovesFrom(origin: Square, player: Player): Iterator[RegularMove] = {
     Direction.Diagonal.iterator
       .flatMap(direction => rayCast(player, origin, direction))
       .map(target => RegularMove(origin, target))
   }
+
   def potentialRookMovesFrom(origin: Square, player: Player): Iterator[RegularMove] = {
     Direction.Cross.iterator
       .flatMap(direction => rayCast(player, origin, direction))
       .map(target => RegularMove(origin, target))
   }
+
   def potentialQueenMovesFrom(origin: Square, player: Player): Iterator[RegularMove] = {
     potentialBishopMovesFrom(origin, player) ++
     potentialRookMovesFrom(origin, player)
   }
+
   def potentialKingMovesFrom(origin: Square, player: Player): Iterator[RegularMove] = {
     Direction.All.iterator
       .map(direction => direction.offset)
