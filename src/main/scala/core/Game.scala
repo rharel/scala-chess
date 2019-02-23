@@ -45,8 +45,7 @@ final class Game {
     _positionContext = PositionContext(
       playerToMove = None,
       _positionContext.lastMove,
-      _positionContext.blackForbiddenToCastle,
-      _positionContext.whiteForbiddenToCastle
+      _positionContext.forbiddenToCastle
     )
   }
 

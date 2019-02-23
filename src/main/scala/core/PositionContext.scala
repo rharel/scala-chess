@@ -1,21 +1,16 @@
 package core
 
+import scala.collection.immutable.HashMap
+
 object PositionContext {
   val Initial = PositionContext(
     playerToMove = Some(White),
     lastMove = None,
-    blackForbiddenToCastle = false,
-    whiteForbiddenToCastle = false
+    forbiddenToCastle = HashMap((Black, false), (White, false))
   )
 }
 final case class PositionContext(
     playerToMove: Option[Player],
     lastMove: Option[Move],
-    blackForbiddenToCastle: Boolean,
-    whiteForbiddenToCastle: Boolean) {
-
-  def forbiddenToCastle(player: Player): Boolean = player match {
-    case Black => blackForbiddenToCastle
-    case White => whiteForbiddenToCastle
-  }
+    forbiddenToCastle: HashMap[Player, Boolean]) {
 }
