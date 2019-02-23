@@ -17,8 +17,7 @@ final class Position(grid: Grid[Option[Piece]], context: PositionContext) {
   def isLegal(move: Move): Boolean = context.playerToMove.isDefined && (move match {
     case _: RegularMove |
          _: Promotion => throw new NotImplementedError()
-    case KingsideCastle => canKingsideCastle(context.playerToMove.get)
-    case QueensideCastle => canQueensideCastle(context.playerToMove.get)
+    case Castle(side) => canCastle(context.playerToMove.get, side)
   })
   def isIllegal(move: Move): Boolean = !isLegal(move)
 

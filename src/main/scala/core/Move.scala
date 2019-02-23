@@ -16,9 +16,6 @@ final case class Promotion(origin: Col, target: Col, piece: PromotionPiece) exte
   assert(Math.abs(origin.index - target.index) <= 1)
   override def toString = s"$origin => $target promoted to $piece"
 }
-case object KingsideCastle extends Move {
-  override def toString = "kingside castle"
-}
-case object QueensideCastle extends Move {
-  override def toString = "queenside castle"
+final case class Castle(side: BoardSide) extends Move {
+  override def toString = s"$side castle"
 }
