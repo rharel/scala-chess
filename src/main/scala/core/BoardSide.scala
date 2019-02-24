@@ -2,7 +2,7 @@ package core
 
 sealed trait BoardSide {
   val name: String
-  override def toString: String = s"$name side"
+  override def toString: String = name
 }
-case object Kingside extends BoardSide { val name = "king" }
-case object Queenside extends BoardSide { val name = "queen" }
+case object Kingside extends BoardSide { val name = "kingside" }
+case object Queenside extends BoardSide { val name = "queenside" }
