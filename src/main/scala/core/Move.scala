@@ -1,6 +1,8 @@
 package core
 
-sealed trait Move
+sealed trait Move {
+  def playAt(board: Board): Boolean = throw new NotImplementedError()
+}
 
 final case class RegularMove(origin: Square, target: Square) extends Move {
   assert(origin != target)
