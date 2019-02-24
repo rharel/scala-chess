@@ -38,7 +38,7 @@ final class Position(grid: Grid[Option[Piece]], context: PositionContext) {
   def isLegal(move: Move): Boolean = context.playerToMove.exists(player => {
     def isLegalFrom(origin: Square): Boolean = {
       isFriendlyTo(origin, player) &&
-      potentialMovesFrom(origin).contains(move) &&
+      potentialMovesFrom(origin, this(origin).get).contains(move) &&
       !isCheckedAfter(player, move)
     }
     move match {
@@ -57,7 +57,8 @@ final class Position(grid: Grid[Option[Piece]], context: PositionContext) {
     if (isChecked(player)) { return findCheckBreakingMovesFor(player) }
 
     Grid.Squares.iterator
-      .flatMap(square => potentialMovesFrom(square)) ++
+      .filter(square => isFriendlyTo(square, player))
+      .flatMap(square => potentialMovesFrom(square, this(square).get)) ++
       Iterator[Move](Castle(Kingside), Castle(Queenside)) ++
       potentialPromotionsFor(player)
   }
@@ -83,7 +84,7 @@ final class Position(grid: Grid[Option[Piece]], context: PositionContext) {
     promotions.iterator
   }
 
-  def potentialMovesFrom(origin: Square): Iterator[RegularMove] = this(origin).map(piece =>
+  def potentialMovesFrom(origin: Square, piece: Piece): Iterator[RegularMove] =
     piece.kind match {
       case Pawn => potentialPawnMovesFrom(origin, piece.owner)
       case Knight => potentialKnightMovesFrom(origin, piece.owner)
@@ -92,8 +93,23 @@ final class Position(grid: Grid[Option[Piece]], context: PositionContext) {
       case Queen => potentialQueenMovesFrom(origin, piece.owner)
       case King => potentialKingMovesFrom(origin, piece.owner)
     }
-  ).getOrElse(Iterator.empty)
 
+  def potentialPawnCapturesFrom(origin: Square, player: Player): Iterator[RegularMove] = {
+    val dRow = player.marchDirection
+    Iterator[(Int, Int)]((dRow, -1), (dRow, +1))
+      .filter(captureStep => origin +? captureStep)
+      .map(captureStep => origin + captureStep)
+      .filter(target => {
+        isHostileTo(target, player) || {
+          // Capture en passant.
+          val opponentTwoStep = target - (dRow, 0)
+          isEmpty(target) &&
+          context.lastMove.contains(RegularMove(_, opponentTwoStep)) &&
+          this(opponentTwoStep).contains(Piece(player.opponent, Pawn))
+        }
+      })
+      .map(target => RegularMove(origin, target))
+  }
   def potentialPawnMovesFrom(origin: Square, player: Player): Iterator[RegularMove] = {
     if (origin.row == player.promotionEdgeRow) {
       return Iterator.empty  // Promotions are generated in a separate method.
@@ -110,19 +126,7 @@ final class Position(grid: Grid[Option[Piece]], context: PositionContext) {
         moves += RegularMove(origin, origin + twoStep)
       }
     }
-    Iterator[(Int, Int)]((dRow, -1), (dRow, +1))
-      .filter(captureStep => origin +? captureStep)
-      .foreach(captureStep => {
-        val target = origin + captureStep
-        if (isHostileTo(target, player)) {
-          moves += RegularMove(origin, target)  // Regular capture.
-        }
-        else if (context.lastMove.contains(RegularMove(_, target - (dRow, 0))) &&
-                 this(target - (dRow, 0)).contains(Piece(player.opponent, Pawn)) &&
-                 isEmpty(target)) {
-          moves += RegularMove(origin, target)  // Capture en passant.
-        }
-      })
+    moves ++= potentialPawnCapturesFrom(origin, player)
     moves.iterator
   }
 
