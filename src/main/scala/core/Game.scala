@@ -10,6 +10,9 @@ final class Game {
   def result: Option[GameResult] = _result
   def isOver: Boolean = result.isDefined
   def inProgress: Boolean = !isOver
+  def winner: Option[Player] = throw new NotImplementedError()
+  def loser: Option[Player] = winner.map(_.opponent)
+  def isDrawn: Boolean = isOver && winner.isEmpty && loser.isEmpty
 
   def position: Position = new Position(_board.grid, _positionContext)
 
@@ -25,10 +28,8 @@ final class Game {
     action match {
       case Play(_) => throw new NotImplementedError()
       case OfferDraw =>
-      case AcceptDraw =>
-        val proposer = activePlayer.get.opponent
-        endWith(Draw(proposer))
-      case Resign => endWith(Resignation(activePlayer.get))
+      case AcceptDraw => endWith(Draw(DrawAgreement))
+      case Resign => endWith(Resignation)
     }
     _history.append(action)
     _activePlayer = _activePlayer.map(_.opponent)

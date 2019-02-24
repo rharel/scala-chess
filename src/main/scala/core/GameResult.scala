@@ -2,21 +2,30 @@ package core
 
 sealed trait GameResult
 
-final case class Checkmate(winner: Player) extends GameResult {
-  override def toString = s"$winner wins"
+case object Checkmate extends GameResult {
+  override def toString = "checkmate"
 }
-final case class Resignation(loser: Player) extends GameResult {
-  override def toString = s"$loser resigns"
+case object Resignation extends GameResult {
+  override def toString = "resignation"
 }
-final case class Stalemate(playerToMove: Player) extends GameResult {
-  override def toString = s"stalemate for $playerToMove"
+final case class Draw(reason: DrawReason) extends GameResult {
+  override def toString = s"draw by $reason"
 }
-final case class Draw(proposer: Player) extends GameResult {
-  override def toString = s"draw proposed by $proposer"
+
+sealed trait DrawReason
+
+case object DrawAgreement extends DrawReason {
+  override def toString = "player agreement"
+}
+case object Stalemate extends DrawReason {
+  override def toString = "stalemate"
 }
 case object ThreefoldRepetition extends GameResult {
   override def toString = "threefold repetition"
 }
-case object FiftyMoveRule extends GameResult {
+case object FiftyMoveRule extends DrawReason {
   override def toString = "fifty move rule"
+}
+case object SeventyFiveMoveRule extends DrawReason {
+  override def toString = "seventy five move rule"
 }
