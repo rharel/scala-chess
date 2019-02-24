@@ -9,37 +9,30 @@ final class Position(grid: Grid[Option[Piece]], context: PositionContext) {
   def isOccupied(square: Square): Boolean = !isEmpty(square)
 
   def isFriendlyTo(square: Square, player: Player): Boolean =
-    this(square) match {
-      case Some(Piece(owner, _)) => player == owner
-      case None => false
-    }
+    this(square).exists(_.owner == player)
   def isHostileTo(square: Square, player: Player): Boolean =
-    isOccupied(square) && !isFriendlyTo(square, player)
+    this(square).exists(_.owner == player.opponent)
 
-  def isThreatenedBy(square: Square, threat: Player): Boolean = throw new NotImplementedError()
-  def isSafeFrom(square: Square, threat: Player): Boolean = !isThreatenedBy(square, threat)
-
-  def findPiece(query: Piece): Option[Square] =
-    Grid.Squares.find(square => this(square).contains(query))
+  def isThreatenedBy(square: Square, player: Player): Boolean =
+    throw new NotImplementedError()
+  def isSafeFrom(square: Square, player: Player): Boolean =
+    !isThreatenedBy(square, player)
 
   def isChecked(player: Player): Boolean =
-    findPiece(Piece(player, King))
-      .exists(square => isThreatenedBy(square, player.opponent))
-  def isCheckedAfter(player: Player, move: Move): Boolean = throw new NotImplementedError()
-
+    throw new NotImplementedError()
   def isMated(player: Player): Boolean =
-    isChecked(player) && findCheckBreakingMovesFor(player).isEmpty
+    isChecked(player) && findCheckBreakersFor(player).isEmpty
 
   def canCastle(player: Player, side: BoardSide): Boolean =
     !context.forbiddenToCastle(player) &&
     !isChecked(player) &&
-    player.baseSquares(side).forall(square => isSafeFrom(square, player.opponent))
+    player.baseSquares(side).forall(isSafeFrom(_, player.opponent))
 
   def isLegal(move: Move): Boolean = context.playerToMove.exists(player => {
     def isLegalFrom(origin: Square): Boolean = {
       isFriendlyTo(origin, player) &&
-      potentialMovesFrom(origin, this(origin).get).contains(move) &&
-      !isCheckedAfter(player, move)
+      potentialMovesFrom(origin).contains(move) &&
+      !isSuicidal(move, player)
     }
     move match {
       case RegularMove(origin, _) => isLegalFrom(origin)
@@ -49,16 +42,13 @@ final class Position(grid: Grid[Option[Piece]], context: PositionContext) {
   })
   def isIllegal(move: Move): Boolean = !isLegal(move)
 
-  def findCheckBreakingMovesFor(player: Player): Iterator[RegularMove] =
-    throw new NotImplementedError()
-
   def potentialMovesFor(player: Player): Iterator[Move] = {
     if (!context.playerToMove.contains(player)) { return Iterator.empty }
-    if (isChecked(player)) { return findCheckBreakingMovesFor(player) }
+    if (isChecked(player)) { return findCheckBreakersFor(player) }
 
     Grid.Squares.iterator
       .filter(square => isFriendlyTo(square, player))
-      .flatMap(square => potentialMovesFrom(square, this(square).get)) ++
+      .flatMap(square => potentialMovesFrom(square)) ++
       Iterator[Move](Castle(Kingside), Castle(Queenside)) ++
       potentialPromotionsFor(player)
   }
@@ -72,10 +62,10 @@ final class Position(grid: Grid[Option[Piece]], context: PositionContext) {
       // Check if promotion is possible using a normal step forward.
       val forwardStep = Square(player.promotionRow, col)
       if (isEmpty(forwardStep)) {
-        promotions ++ Promotion.allFor(col, col)
+        promotions ++= Promotion.allFor(col, col)
       }
       // Check if promotion is possible using a capture.
-      promotions ++ Iterator[Int](-1, 1)
+      promotions ++= Iterator[Int](-1, 1)
         .filter(dCol => col +? dCol)
         .map(dCol => Square(player.promotionRow, col + dCol))
         .filter(square => isHostileTo(square, player))
@@ -84,15 +74,17 @@ final class Position(grid: Grid[Option[Piece]], context: PositionContext) {
     promotions.iterator
   }
 
-  def potentialMovesFrom(origin: Square, piece: Piece): Iterator[RegularMove] =
-    piece.kind match {
-      case Pawn => potentialPawnMovesFrom(origin, piece.owner)
-      case Knight => potentialKnightMovesFrom(origin, piece.owner)
-      case Bishop => potentialBishopMovesFrom(origin, piece.owner)
-      case Rook => potentialRookMovesFrom(origin, piece.owner)
-      case Queen => potentialQueenMovesFrom(origin, piece.owner)
-      case King => potentialKingMovesFrom(origin, piece.owner)
-    }
+  def potentialMovesFrom(origin: Square): Iterator[RegularMove] =
+    this(origin).map(piece =>
+      piece.kind match {
+        case Pawn => potentialPawnMovesFrom(origin, piece.owner)
+        case Knight => potentialKnightMovesFrom(origin, piece.owner)
+        case Bishop => potentialBishopMovesFrom(origin, piece.owner)
+        case Rook => potentialRookMovesFrom(origin, piece.owner)
+        case Queen => potentialQueenMovesFrom(origin, piece.owner)
+        case King => potentialKingMovesFrom(origin, piece.owner)
+      }
+    ).getOrElse(Iterator.empty)
 
   def potentialPawnCapturesFrom(origin: Square, player: Player): Iterator[RegularMove] = {
     val dRow = player.marchDirection
@@ -162,6 +154,12 @@ final class Position(grid: Grid[Option[Piece]], context: PositionContext) {
       .map(offset => RegularMove(origin, origin + offset))
   }
 
+  private def isSuicidal(move: Move, player: Player): Boolean = {
+    val board = Board.fromGrid(grid)
+    move.playAt(board)
+    new Position(board.grid, context).isChecked(player)
+  }
+
   private def rayCast(
       player: Player,
       origin: Square,
@@ -179,4 +177,7 @@ final class Position(grid: Grid[Option[Piece]], context: PositionContext) {
     }
     path.iterator
   }
+
+  def findCheckBreakersFor(player: Player): Iterator[RegularMove] =
+    throw new NotImplementedError()
 }
