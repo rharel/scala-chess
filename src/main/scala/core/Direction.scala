@@ -1,12 +1,9 @@
 package core
 
 object Direction {
-  val All: Iterable[Direction] = List(
-    Left, Right, Bottom, Top,
-    BottomLeft, BottomRight, TopLeft, TopRight
-  )
   val Cross: Iterable[Direction] = List(Left, Right, Bottom, Top)
   val Diagonal: Iterable[Direction] = List(BottomLeft, BottomRight, TopLeft, TopRight)
+  val All: Iterable[Direction] = Cross ++ Diagonal
 }
 sealed trait Direction {
   val offset: (Int, Int)

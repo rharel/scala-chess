@@ -31,7 +31,7 @@ final class Game {
       case Resign => endWith(Resignation(activePlayer.get))
     }
     _history.append(action)
-    _activePlayer = _activePlayer.map(player => player.opponent)
+    _activePlayer = _activePlayer.map(_.opponent)
     true
   }
   def undoAction: Boolean = throw new NotImplementedError()
@@ -59,7 +59,7 @@ final class Game {
     "pppppppp" +
     "rnbqkbnr"
   )
-  private val _history: ListBuffer[PlayerAction] = new ListBuffer[PlayerAction]
+  private val _history: ListBuffer[PlayerAction] = new ListBuffer
 
   private var _positionContext: PositionContext = PositionContext.Initial
   private var _activePlayer: Option[Player] = Some(White)

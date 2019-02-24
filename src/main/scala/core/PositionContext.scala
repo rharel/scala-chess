@@ -12,5 +12,4 @@ object PositionContext {
 final case class PositionContext(
     playerToMove: Option[Player],
     lastMove: Option[Move],
-    forbiddenToCastle: HashMap[Player, Boolean]) {
-}
+    forbiddenToCastle: HashMap[Player, Boolean])

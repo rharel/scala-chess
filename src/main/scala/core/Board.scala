@@ -3,7 +3,7 @@ package core
 object Board{
   def fromGrid(source: Grid[Option[Piece]]): Board =
     source.iterator
-      .flatMap(_ match {
+      .flatMap(deployment => deployment match {
         case (square, Some(piece)) => Some(square, piece)
         case (_, None) => None
       })
@@ -15,10 +15,9 @@ object Board{
 
   def fromString(source: String): Board =
     source.iterator
-      .map(char => Piece.fromChar(char))
-      .collect{case option: Option[Piece] if option.isDefined => option.get}
-      .take(Grid.SquareCount)
+      .flatMap(Piece.fromChar)
       .zip(Grid.Squares.iterator)
+      .take(Grid.SquareCount)
       .foldLeft(new Board)((board, deployment) => {
         val (piece, square) = deployment
         board.put(square, piece)
