@@ -1,7 +1,8 @@
 package core
 
 sealed trait Move {
-  def playAt(board: Board): Boolean = throw new NotImplementedError()
+  def canPlayOn(board: Board): Boolean = throw new NotImplementedError()
+  def playOn(board: Board): Boolean = throw new NotImplementedError()
 }
 
 final case class RegularMove(origin: Square, target: Square) extends Move {
