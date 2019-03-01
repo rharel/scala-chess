@@ -15,11 +15,11 @@ object Grid {
     private var _current: Square = origin
   }
 }
-trait Grid[A] extends Iterable[(Square, A)] {
+trait Grid[A] extends Iterable[A] {
   def apply(square: Square): A
 
-  override def iterator: Iterator[(Square, A)] =
-    Grid.Squares.iterator.map(square => (square, this(square)))
+  override def iterator: Iterator[A] =
+    Grid.Squares.iterator.map(square => this(square))
 
   override def toString: String =
     Grid.Squares.iterator

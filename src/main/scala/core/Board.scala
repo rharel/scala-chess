@@ -3,12 +3,13 @@ package core
 object Board{
   def fromGrid(source: Grid[Option[Piece]]): Board =
     source.iterator
+      .zip(Grid.Squares.iterator)
       .flatMap(deployment => deployment match {
-        case (square, Some(piece)) => Some(square, piece)
-        case (_, None) => None
+        case (Some(piece), square) => Some(piece, square)
+        case (None, _) => None
       })
       .foldLeft(new Board)((board, deployment) => {
-        val (square, piece) = deployment
+        val (piece, square) = deployment
         board.put(square, piece)
         board
       })
@@ -25,8 +26,15 @@ object Board{
       })
 }
 final class Board {
+  def grid: Grid[Option[Piece]] = _grid
+
   def apply(square: Square): Option[Piece] = grid(square)
-  def update(square: Square, value: Option[Piece]): Unit = grid(square) = value
+  def update(square: Square, value: Option[Piece]): Unit = _grid(square) = value
+
+  def isEmpty: Boolean = pieceSquares.isEmpty
+  def pieceCount: Int = pieceSquares.size
+  def pieceSquares: Iterator[Square] =
+    Grid.Squares.iterator.filter(square => this(square).isDefined)
 
   def take(square: Square): Option[Piece] = {
     val contents = this(square)
@@ -35,7 +43,7 @@ final class Board {
   }
   def put(square: Square, piece: Piece): Unit = this(square) = Some(piece)
 
-  def copy(source: Board): Unit = this.grid.copy(source.grid)
+  def copy(source: Board): Unit = this._grid.copy(source._grid)
 
   override def clone: Board = {
     val result = new Board
@@ -46,7 +54,7 @@ final class Board {
   override def toString: String = {
     var result = ""
     for (square <- Grid.Squares) {
-      result += (this(square) match {
+      result += (grid(square) match {
         case Some(piece) => piece.toChar
         case None => "."
       })
@@ -55,5 +63,5 @@ final class Board {
     result
   }
 
-  val grid = new ArrayGrid[Option[Piece]](None)
+  val _grid = new ArrayGrid[Option[Piece]](None)
 }
