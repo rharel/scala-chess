@@ -16,12 +16,12 @@ object Board{
 
   def fromString(source: String): Board =
     source.iterator
-      .flatMap(Piece.fromChar)
+      .map(Piece.fromChar)
       .zip(Grid.Squares.iterator)
       .take(Grid.SquareCount)
       .foldLeft(new Board)((board, deployment) => {
-        val (piece, square) = deployment
-        board.put(square, piece)
+        val (value, square) = deployment
+        board(square) = value
         board
       })
 }
