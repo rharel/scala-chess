@@ -7,12 +7,12 @@ sealed trait Player {
   val opponent: Player
   val marchDirection: Int
   val baseRow: Row
-  val pawnRow: Row = baseRow + marchDirection
-  val enPassantRow: Row = baseRow + 4 * marchDirection
-  val promotionEdgeRow: Row = opponent.pawnRow
-  val promotionRow: Row = opponent.baseRow
-  val kingSquare = Square(baseRow, Col.fromIndex(4))
-  val baseSquares: HashMap[BoardSide, Iterable[Square]] = HashMap(
+  lazy val pawnRow: Row = baseRow + marchDirection
+  lazy val enPassantRow: Row = baseRow + 4 * marchDirection
+  lazy val promotionEdgeRow: Row = opponent.pawnRow
+  lazy val promotionRow: Row = opponent.baseRow
+  lazy val kingSquare = Square(baseRow, Col.fromIndex(4))
+  lazy val baseSquares: HashMap[BoardSide, Iterable[Square]] = HashMap(
     (Kingside, Grid.rayCast(kingSquare, Left).toIterable),
     (Queenside, Grid.rayCast(kingSquare, Right).toIterable)
   )
