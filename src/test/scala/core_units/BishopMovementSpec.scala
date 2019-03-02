@@ -6,7 +6,7 @@ import org.scalatest._
 
 class BishopMovementSpec extends FlatSpec with Matchers {
   "A bishop" should "be able to move diagonally in each direction when free" in {
-    val grid = new ArrayGrid[Option[Piece]](None)
+    val grid = ArrayGrid.fill[Option[Piece]](None)
     val position = new Position(grid, PositionContext.Initial)
 
     val moves = position.potentialBishopMovesFrom(Square(3, 3), White).toSet
@@ -26,7 +26,7 @@ class BishopMovementSpec extends FlatSpec with Matchers {
     moves contains RegularMove(Square(3, 3), Square(6, 0)) should be (true)
   }
   it should "be able to capture hostile pieces but not move beyond them" in {
-    val grid = new ArrayGrid[Option[Piece]](None)
+    val grid = ArrayGrid.fill[Option[Piece]](None)
     val position = new Position(grid, PositionContext.Initial)
 
     grid(Square(5, 5)) = Some(Piece(Black, Pawn))
@@ -38,7 +38,7 @@ class BishopMovementSpec extends FlatSpec with Matchers {
     moves contains RegularMove(Square(3, 3), Square(7, 7)) should be (false)
   }
   it should "not be able to move onto friendly pieces or beyond them" in {
-    val grid = new ArrayGrid[Option[Piece]](None)
+    val grid = ArrayGrid.fill[Option[Piece]](None)
     val position = new Position(grid, PositionContext.Initial)
 
     grid(Square(5, 5)) = Some(Piece(White, Pawn))

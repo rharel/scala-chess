@@ -6,7 +6,7 @@ import org.scalatest._
 
 class RookMovementSpec extends FlatSpec with Matchers {
   "A rook" should "be able to move at a cross in each direction when free" in {
-    val grid = new ArrayGrid[Option[Piece]](None)
+    val grid = ArrayGrid.fill[Option[Piece]](None)
     val position = new Position(grid, PositionContext.Initial)
 
     val moves = position.potentialRookMovesFrom(Square(3, 3), White).toSet
@@ -27,7 +27,7 @@ class RookMovementSpec extends FlatSpec with Matchers {
     moves contains RegularMove(Square(3, 3), Square(7, 3)) should be (true)
   }
   it should "be able to capture hostile pieces but not move beyond them" in {
-    val grid = new ArrayGrid[Option[Piece]](None)
+    val grid = ArrayGrid.fill[Option[Piece]](None)
     val position = new Position(grid, PositionContext.Initial)
 
     grid(Square(3, 5)) = Some(Piece(Black, Pawn))
@@ -39,7 +39,7 @@ class RookMovementSpec extends FlatSpec with Matchers {
     moves contains RegularMove(Square(3, 3), Square(3, 7)) should be (false)
   }
   it should "not be able to move onto friendly pieces or beyond them" in {
-    val grid = new ArrayGrid[Option[Piece]](None)
+    val grid = ArrayGrid.fill[Option[Piece]](None)
     val position = new Position(grid, PositionContext.Initial)
 
     grid(Square(3, 5)) = Some(Piece(White, Pawn))

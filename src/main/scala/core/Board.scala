@@ -63,5 +63,5 @@ final class Board {
     result
   }
 
-  val _grid = new ArrayGrid[Option[Piece]](None)
+  val _grid: ArrayGrid[Option[Piece]] = ArrayGrid.fill(None)
 }
