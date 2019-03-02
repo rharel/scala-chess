@@ -4,6 +4,14 @@ object Direction {
   val Cross: Iterable[Direction] = List(Left, Right, Bottom, Top)
   val Diagonal: Iterable[Direction] = List(BottomLeft, BottomRight, TopLeft, TopRight)
   val All: Iterable[Direction] = Cross ++ Diagonal
+
+  def between(origin: Square, target: Square): Option[Direction] = {
+    val offset = (
+      origin.row.index - target.row.index,
+      origin.col.index - target.col.index
+    )
+    Direction.All.find(_.offset == offset)
+  }
 }
 sealed trait Direction {
   val offset: (Int, Int)
