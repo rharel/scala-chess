@@ -12,6 +12,8 @@ sealed trait Player {
   lazy val promotionEdgeRow: Row = opponent.pawnRow
   lazy val promotionRow: Row = opponent.baseRow
   lazy val kingSquare = Square(baseRow, Col.fromIndex(4))
+  lazy val kingsideRookSquare = Square(baseRow, Col.First)
+  lazy val queensideRookSquare = Square(baseRow, Col.Last)
   lazy val baseSquares: HashMap[BoardSide, Iterable[Square]] = HashMap(
     (Kingside, Grid.rayCast(kingSquare, Left).toIterable),
     (Queenside, Grid.rayCast(kingSquare, Right).toIterable)

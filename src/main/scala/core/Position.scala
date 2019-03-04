@@ -15,7 +15,7 @@ final class Position(grid: Grid[Option[Piece]], context: PositionContext) {
     this(square).exists(_.owner == player.opponent)
 
   def isThreatenedBy(square: Square, player: Player): Boolean =
-    throw new NotImplementedError()
+    _threatsBy(player)(square).nonEmpty
   def isSafeFrom(square: Square, player: Player): Boolean =
     !isThreatenedBy(square, player)
 
@@ -25,7 +25,7 @@ final class Position(grid: Grid[Option[Piece]], context: PositionContext) {
     isChecked(player) && findCheckBreakersFor(player).isEmpty
 
   def canCastle(player: Player, side: BoardSide): Boolean =
-    !context.forbiddenToCastle(player) &&
+    context.castleRights((player, side)) &&
     !isChecked(player) &&
     player.baseSquares(side).forall(isSafeFrom(_, player.opponent))
 
