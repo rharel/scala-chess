@@ -1,5 +1,6 @@
 package core
 
+import scala.collection.immutable.{HashMap, HashSet}
 import scala.collection.mutable.ListBuffer
 
 final class Position(grid: Grid[Option[Piece]], context: PositionContext) {
@@ -19,7 +20,7 @@ final class Position(grid: Grid[Option[Piece]], context: PositionContext) {
     !isThreatenedBy(square, player)
 
   def isChecked(player: Player): Boolean =
-    throw new NotImplementedError()
+    _kingSquare(player).exists(isThreatenedBy(_, player.opponent))
   def isMated(player: Player): Boolean =
     isChecked(player) && findCheckBreakersFor(player).isEmpty
 
@@ -54,9 +55,9 @@ final class Position(grid: Grid[Option[Piece]], context: PositionContext) {
   }
 
   def potentialPromotionsFor(player: Player): Iterator[Promotion] = {
-    def isFriendlyPawn(row: Row, col: Col): Boolean = {
+    def isFriendlyPawn(row: Row, col: Col) =
       this(Square(row, col)).contains(Piece(player, Pawn))
-    }
+
     val promotions = ListBuffer.empty[Promotion]
     for (col <- Col.All; if isFriendlyPawn(player.promotionEdgeRow, col)) {
       // Check if promotion is possible using a normal step forward.
@@ -154,6 +155,41 @@ final class Position(grid: Grid[Option[Piece]], context: PositionContext) {
       .map(offset => RegularMove(origin, origin + offset))
   }
 
+  def findCheckBreakersFor(player: Player): Iterator[Move] = {
+    if (!isChecked(player)) { return Iterator.empty }
+
+    var breakers = new HashSet[Move]
+    val king = _kingSquare(player).get
+
+    // Collect moves the king can make to save itself.
+    breakers ++= potentialMovesFrom(king)
+      .filter(move => isSafeFrom(move.target, player.opponent))
+
+    // If there is more than one threat, there's nothing else to do.
+    if (_threatsBy(player.opponent)(king).size > 1) { return breakers.iterator }
+
+    // Otherwise, we have two options...
+    val assassin = _threatsBy(player.opponent)(king).head
+
+    // ...either we capture it...
+    val guards = _threatsBy(player)(assassin)
+    breakers ++= guards.map(guard => RegularMove(guard, assassin))
+
+    // ...or move a friendly piece to block its line of fire.
+    this(assassin).get.kind match {
+      case Bishop | Rook | Queen =>
+        val lineOfFire = Grid.rayCast(
+          assassin, Direction.between(assassin, king).get
+        )
+        breakers ++= lineOfFire.flatMap(square => {
+          val blockers = _threatsBy(player)(square)
+          blockers.map(RegularMove(_, square))
+        })
+      case _ =>
+    }
+    breakers.iterator
+  }
+
   private def isSuicidal(move: Move, player: Player): Boolean = {
     val board = Board.fromGrid(grid)
     move.playOn(board)
@@ -178,6 +214,22 @@ final class Position(grid: Grid[Option[Piece]], context: PositionContext) {
     path.iterator
   }
 
-  def findCheckBreakersFor(player: Player): Iterator[RegularMove] =
-    throw new NotImplementedError()
+  private val _kingSquare: HashMap[Player, Option[Square]] = HashMap(
+    (Black, Grid.Squares.find(this(_).contains(Piece(Black, King)))),
+    (White, Grid.Squares.find(this(_).contains(Piece(White, King))))
+  )
+  private val _threatsBy: HashMap[Player, ArrayGrid[ListBuffer[Square]]] = HashMap(
+    (Black, ArrayGrid.populate(_ => new ListBuffer[Square])),
+    (White, ArrayGrid.populate(_ => new ListBuffer[Square]))
+  )
+  Grid.Squares.iterator
+    .filter(square => isOccupied(square))
+    .flatMap(square => this(square).get.kind match {
+      case Pawn => potentialPawnCapturesFrom(square, this(square).get.owner)
+      case _ => potentialMovesFrom(square)
+    })
+    .foreach(move => {
+      val player = this(move.origin).get.owner
+      _threatsBy(player)(move.target) += move.origin
+    })
 }
