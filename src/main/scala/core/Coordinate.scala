@@ -36,6 +36,9 @@ final case class Row private (index: Int) extends AnyVal {
   def >(other: Row): Boolean = other < this
   def >=(other: Row): Boolean = !(this < other)
 
+  def distanceTo(other: Row): Int = Math.abs(this offset other)
+  def offset(other: Row): Int = this.index - other.index
+
   override def toString = s"${index + 1}"
 }
 
@@ -65,7 +68,10 @@ final case class Col private (index: Int) extends AnyVal {
   def <=(other: Col): Boolean = !(other < this)
   def >(other: Col): Boolean = other < this
   def >=(other: Col): Boolean = !(this < other)
-  
+
+  def distanceTo(other: Col): Int = Math.abs(this offset other)
+  def offset(other: Col): Int = this.index - other.index
+
   override def toString = s"${('a' + index).toChar}"
 }
 

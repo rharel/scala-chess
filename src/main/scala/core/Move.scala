@@ -15,8 +15,12 @@ object Promotion {
       .map(piece => Promotion(origin, target, piece))
   }
 }
-final case class Promotion(originCol: Col, targetCol: Col, piece: PromotionPiece) extends Move {
-  assert(Math.abs(originCol.index - targetCol.index) <= 1)
+final case class Promotion(
+    originCol: Col,
+    targetCol: Col,
+    piece: PromotionPiece) extends Move {
+
+  assert((originCol distanceTo targetCol) <= 1)
 
   def originFor(player: Player) = Square(player.promotionEdgeRow, originCol)
   def targetFor(player: Player) = Square(player.promotionRow, targetCol)
