@@ -3,7 +3,10 @@ package core
 import scala.collection.immutable.{HashMap, HashSet}
 import scala.collection.mutable.ListBuffer
 
-final class Position(grid: Grid[Option[Piece]], context: PositionContext) {
+final class Position(
+    val grid: Grid[Option[Piece]],
+    val context: PositionContext) {
+
   def apply(square: Square): Option[Piece] = grid(square)
 
   def isEmpty(square: Square): Boolean = this(square).isEmpty
@@ -23,6 +26,8 @@ final class Position(grid: Grid[Option[Piece]], context: PositionContext) {
     _kingSquare(player).exists(isThreatenedBy(_, player.opponent))
   def isMated(player: Player): Boolean =
     isChecked(player) && findCheckBreakersFor(player).isEmpty
+  def isStale(player: Player): Boolean =
+    potentialMovesFor(player).isEmpty
 
   def canCastle(player: Player, side: BoardSide): Boolean =
     context.castleRights((player, side)) &&
