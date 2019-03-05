@@ -59,13 +59,14 @@ final class Game {
     assert(move.canPlayOn(_board))
 
     _moveHistory += move
-    _positionContext = position.context.after(move, position.grid).get
+    _positionContext = position.context.after(move, position.grid)
     _position = new Position(_board.grid, _positionContext)
 
     move.playOn(_board)
 
-    val playerToMove = position.context.playerToMove.get
+    val playerToMove = position.context.playerToMove
     if (position.isMated(playerToMove)) Some(Checkmate)
+    else if (position.context.staleStreakSize >= 75) Some(Draw(SeventyFiveMoveRule))
     else if (position.isStale(playerToMove)) Some(Draw(Stalemate))
     else None
   }

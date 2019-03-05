@@ -34,7 +34,9 @@ final class Position(
     !isChecked(player) &&
     player.baseSquares(side).forall(isSafeFrom(_, player.opponent))
 
-  def isLegal(move: Move): Boolean = context.playerToMove.exists(player => {
+  def isLegal(move: Move): Boolean = {
+    val player = context.playerToMove
+
     def isLegalFrom(origin: Square): Boolean = {
       isFriendlyTo(origin, player) &&
       potentialMovesFrom(origin).contains(move) &&
@@ -45,11 +47,11 @@ final class Position(
       case promotion: Promotion => isLegalFrom(promotion.originFor(player))
       case Castle(side) => canCastle(player, side)
     }
-  })
+  }
   def isIllegal(move: Move): Boolean = !isLegal(move)
 
   def potentialMovesFor(player: Player): Iterator[Move] = {
-    if (!context.playerToMove.contains(player)) { return Iterator.empty }
+    if (context.playerToMove != player) { return Iterator.empty }
     if (isChecked(player)) { return findCheckBreakersFor(player) }
 
     Grid.Squares.iterator
