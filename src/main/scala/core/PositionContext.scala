@@ -67,12 +67,12 @@ final case class PositionContext(
         newRights((player, Queenside)) = false
 
       case RegularMove(origin, _)
-        if origin == player.kingsideRookSquare &&
+        if origin == player.rookSquare(Kingside) &&
            grid(origin).contains(Piece(player, Rook)) =>
         newRights((player, Kingside)) = false
 
       case RegularMove(origin, _)
-        if origin == player.queensideRookSquare &&
+        if origin == player.rookSquare(Queenside) &&
            grid(origin).contains(Piece(player, Rook)) =>
         newRights((player, Queenside)) = false
 

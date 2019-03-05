@@ -56,15 +56,15 @@ final class Game {
   override def toString: String = _actionHistory.mkString(", ")
 
   private def play(move: Move): Option[GameResult] = {
-    assert(move.canPlayOn(_board))
+    assert(isLegal(Play(move)))
 
     _moveHistory += move
     _positionContext = position.context.after(move, position.grid)
     _position = new Position(_board.grid, _positionContext)
 
-    move.playOn(_board)
-
     val playerToMove = position.context.playerToMove
+    playerToMove.play(move, _board)
+
     if (position.isMated(playerToMove)) Some(Checkmate)
     else if (position.context.staleStreakSize >= 75) Some(Draw(SeventyFiveMoveRule))
     else if (position.isStale(playerToMove)) Some(Draw(Stalemate))

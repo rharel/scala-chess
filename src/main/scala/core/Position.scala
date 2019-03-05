@@ -199,7 +199,7 @@ final class Position(
 
   private def isSuicidal(move: Move, player: Player): Boolean = {
     val board = Board.fromGrid(grid)
-    move.playOn(board)
+    player.play(move, board)
     new Position(board.grid, context).isChecked(player)
   }
 
