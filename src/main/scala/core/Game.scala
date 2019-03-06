@@ -11,7 +11,9 @@ final class Game {
 
   def actionHistory: Iterable[PlayerAction] = _actionHistory
   def lastAction: Option[PlayerAction] = actionHistory.lastOption
-  def lastToAct: Option[Player] = activePlayer.map(_.opponent)
+  def lastToAct: Option[Player] =
+    if (actionHistory.isEmpty) None
+    else activePlayer.map(_.opponent)
 
   def moveHistory: Iterable[Move] = _moveHistory
   def lastMove: Option[Move] = moveHistory.lastOption
