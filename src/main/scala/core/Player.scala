@@ -11,7 +11,7 @@ sealed trait Player {
   lazy val enPassantRow: Row = baseRow + 4 * marchDirection
   lazy val promotionEdgeRow: Row = opponent.pawnRow
   lazy val promotionRow: Row = opponent.baseRow
-  lazy val kingSquare = Square(baseRow, Col.fromIndex(4))
+  lazy val kingSquare = Square(baseRow, Col.fromIndex(4).get)
   lazy val rookSquare: HashMap[BoardSide, Square] = HashMap(
     (Kingside, Square(baseRow, Col.First)),
     (Queenside, Square(baseRow, Col.Last))

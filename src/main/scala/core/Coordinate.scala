@@ -10,22 +10,24 @@ object Coordinate {
 }
 
 object Row {
-  val First: Row = Row.fromIndex(Coordinate.First)
-  val Last: Row = Row.fromIndex(Coordinate.Last)
+  val First: Row = Row.fromIndex(Coordinate.First).get
+  val Last: Row = Row.fromIndex(Coordinate.Last).get
   val All: Iterable[Row] =
-    (Coordinate.First to Coordinate.Last).map(Row.fromIndex)
+    (Coordinate.First to Coordinate.Last).map(Row(_))
 
-  def fromIndex(index: Int): Row = {
-    assert(Coordinate.isValid(index))
-    Row(index)
-  }
+  def fromIndex(index: Int): Option[Row] =
+    if (Coordinate.isValid(index)) Some(Row(index))
+    else None
+
+  def fromChar(source: Char): Option[Row] =
+    Row.fromIndex(source - '1')
 }
 final case class Row private (index: Int) extends AnyVal {
   def isValid: Boolean = Coordinate.isValid(index)
   def isFirst: Boolean = Coordinate.isFirst(index)
   def isLast: Boolean = Coordinate.isLast(index)
 
-  def +(offset: Int): Row = Row.fromIndex(index + offset)
+  def +(offset: Int): Row = Row.fromIndex(index + offset).get
   def -(offset: Int): Row = this + (-offset)
 
   def +?(offset: Int): Boolean = Coordinate.isValid(index + offset)
@@ -43,22 +45,24 @@ final case class Row private (index: Int) extends AnyVal {
 }
 
 object Col {
-  val First: Col = Col.fromIndex(Coordinate.First)
-  val Last: Col = Col.fromIndex(Coordinate.Last)
+  val First: Col = Col.fromIndex(Coordinate.First).get
+  val Last: Col = Col.fromIndex(Coordinate.Last).get
   val All: Iterable[Col] =
-    (Coordinate.First to Coordinate.Last).map(Col.fromIndex)
+    (Coordinate.First to Coordinate.Last).map(Col(_))
 
-  def fromIndex(index: Int): Col = {
-    assert(Coordinate.isValid(index))
-    Col(index)
-  }
+  def fromIndex(index: Int): Option[Col] =
+    if (Coordinate.isValid(index)) Some(Col(index))
+    else None
+
+  def fromChar(source: Char): Option[Col] =
+    Col.fromIndex(source - 'a')
 }
 final case class Col private (index: Int) extends AnyVal {
   def isValid: Boolean = Coordinate.isValid(index)
   def isFirst: Boolean = Coordinate.isFirst(index)
   def isLast: Boolean = Coordinate.isLast(index)
 
-  def +(offset: Int): Col = Col.fromIndex(index + offset)
+  def +(offset: Int): Col = Col.fromIndex(index + offset).get
   def -(offset: Int): Col = this + (-offset)
 
   def +?(offset: Int): Boolean = Coordinate.isValid(index + offset)
@@ -78,6 +82,6 @@ final case class Col private (index: Int) extends AnyVal {
 object CoordinateConversion {
   import scala.language.implicitConversions
 
-  implicit def intToRow(index: Int): Row = Row.fromIndex(index)
-  implicit def intToCol(index: Int): Col = Col.fromIndex(index)
+  implicit def intToRow(index: Int): Row = Row.fromIndex(index).get
+  implicit def intToCol(index: Int): Col = Col.fromIndex(index).get
 }

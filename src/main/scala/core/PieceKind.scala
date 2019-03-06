@@ -1,5 +1,16 @@
 package core
 
+object PieceKind {
+  def fromChar(source: Char): Option[PieceKind] = source.toLower match {
+    case 'p' => Some(Pawn)
+    case 'n' => Some(Knight)
+    case 'b' => Some(Bishop)
+    case 'r' => Some(Rook)
+    case 'q' => Some(Queen)
+    case 'k' => Some(King)
+    case  _  => None
+  }
+}
 sealed trait PieceKind {
   val name: String
   override def toString: String = name
