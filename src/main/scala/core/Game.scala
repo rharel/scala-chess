@@ -60,16 +60,17 @@ final class Game {
   private def play(move: Move): Option[GameResult] = {
     assert(isLegal(Play(move)))
 
+    val playerToMove = position.context.playerToMove
+
     _moveHistory += move
     _positionContext = position.context.after(move, position.grid)
     _position = new Position(_board.grid, _positionContext)
 
-    val playerToMove = position.context.playerToMove
     playerToMove.play(move, _board)
 
-    if (position.isMated(playerToMove)) Some(Checkmate)
+    if (position.isMated(playerToMove.opponent)) Some(Checkmate)
     else if (position.context.staleStreakSize >= 75) Some(Draw(SeventyFiveMoveRule))
-    else if (position.isStale(playerToMove)) Some(Draw(Stalemate))
+    else if (position.isStale(playerToMove.opponent)) Some(Draw(Stalemate))
     else None
   }
 
