@@ -12,8 +12,11 @@ object Coordinate {
 object Row {
   val First: Row = Row.fromIndex(Coordinate.First).get
   val Last: Row = Row.fromIndex(Coordinate.Last).get
+
   val All: Iterable[Row] =
     (Coordinate.First to Coordinate.Last).map(Row(_))
+  val AllReversed: Iterable[Row] =
+    (Coordinate.Last to Coordinate.First by -1).map(Row(_))
 
   def fromIndex(index: Int): Option[Row] =
     if (Coordinate.isValid(index)) Some(Row(index))
@@ -47,8 +50,11 @@ final case class Row private (index: Int) extends AnyVal {
 object Col {
   val First: Col = Col.fromIndex(Coordinate.First).get
   val Last: Col = Col.fromIndex(Coordinate.Last).get
+
   val All: Iterable[Col] =
     (Coordinate.First to Coordinate.Last).map(Col(_))
+  val AllReversed: Iterable[Col] =
+    (Coordinate.Last to Coordinate.First by -1).map(Col(_))
 
   def fromIndex(index: Int): Option[Col] =
     if (Coordinate.isValid(index)) Some(Col(index))

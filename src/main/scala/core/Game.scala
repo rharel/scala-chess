@@ -75,14 +75,14 @@ final class Game {
   }
 
   private val _board: Board = Board.fromString(
-    "RNBQKBNR" +
-    "PPPPPPPP" +
-    "........" +
-    "........" +
-    "........" +
-    "........" +
+    "rnbqkbnr" +
     "pppppppp" +
-    "rnbqkbnr"
+    "........" +
+    "........" +
+    "........" +
+    "........" +
+    "PPPPPPPP" +
+    "RNBQKBNR"
   )
   private val _actionHistory: ListBuffer[PlayerAction] = new ListBuffer
   private val _moveHistory: ListBuffer[Move] = new ListBuffer

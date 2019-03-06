@@ -17,7 +17,11 @@ object Board{
   def fromString(source: String): Board =
     source.iterator
       .map(Piece.fromChar)
-      .zip(Grid.Squares.iterator)
+      .zip(
+        for (row <- Row.AllReversed.iterator;
+             col <- Col.All.iterator)
+          yield Square(row, col)
+      )
       .take(Grid.SquareCount)
       .foldLeft(new Board)((board, deployment) => {
         val (value, square) = deployment
