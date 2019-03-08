@@ -119,11 +119,11 @@ final class Position(
     val oneStep = (dRow, 0)
     if (origin +? oneStep && isEmpty(origin + oneStep)) {
       moves += RegularMove(origin, origin + oneStep)
-    }
-    if (origin.row == player.pawnRow) {
-      val twoStep = (2 * dRow, 0)
-      if (origin +? twoStep && isEmpty(origin + twoStep)) {
-        moves += RegularMove(origin, origin + twoStep)
+      if (origin.row == player.pawnRow) {
+        val twoStep = (2 * dRow, 0)
+        if (origin +? twoStep && isEmpty(origin + twoStep)) {
+          moves += RegularMove(origin, origin + twoStep)
+        }
       }
     }
     moves ++= potentialPawnCapturesFrom(origin, player)
