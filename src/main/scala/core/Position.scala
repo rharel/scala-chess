@@ -102,10 +102,12 @@ final class Position(
       .filter(target => {
         isHostileTo(target, player) || {
           // Capture en passant.
-          val opponentTwoStep = target - (dRow, 0)
+          val opponent = player.opponent
+          val epOrigin = Square(opponent.pawnRow, target.col)
+          val epTarget = Square(opponent.pawnRow - 2 * dRow, target.col)
           isEmpty(target) &&
-          context.lastMove.contains(RegularMove(_, opponentTwoStep)) &&
-          this(opponentTwoStep).contains(Piece(player.opponent, Pawn))
+          context.lastMove.contains(RegularMove(epOrigin, epTarget)) &&
+          this(epTarget).contains(Piece(opponent, Pawn))
         }
       })
       .map(target => RegularMove(origin, target))
