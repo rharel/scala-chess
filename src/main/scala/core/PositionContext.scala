@@ -79,6 +79,8 @@ final case class PositionContext(
       case _: Castle =>
         newRights((player, Kingside)) = false
         newRights((player, Queenside)) = false
+
+      case _ => Unit
     }
     newRights.toMap
   }
