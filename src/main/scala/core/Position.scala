@@ -43,7 +43,7 @@ final class Position(
       !isSuicidal(move, player)
     }
     move match {
-      case RegularMove(origin, _) => isLegalFrom(origin)
+      case Step(origin, _) => isLegalFrom(origin)
       case promotion: Promotion => isLegalFrom(promotion.originFor(player))
       case Castle(side) => canCastle(player, side)
     }
@@ -82,7 +82,7 @@ final class Position(
     promotions.iterator
   }
 
-  def potentialMovesFrom(origin: Square): Iterator[RegularMove] =
+  def potentialMovesFrom(origin: Square): Iterator[Step] =
     this(origin).map(piece =>
       piece.kind match {
         case Pawn => potentialPawnMovesFrom(origin, piece.owner)
@@ -94,7 +94,7 @@ final class Position(
       }
     ).getOrElse(Iterator.empty)
 
-  def potentialPawnCapturesFrom(origin: Square, player: Player): Iterator[RegularMove] = {
+  def potentialPawnCapturesFrom(origin: Square, player: Player): Iterator[Step] = {
     val dRow = player.marchDirection
     Iterator[(Int, Int)]((dRow, -1), (dRow, +1))
       .filter(captureStep => origin +? captureStep)
@@ -106,25 +106,25 @@ final class Position(
           val epOrigin = Square(opponent.pawnRow, target.col)
           val epTarget = Square(opponent.pawnRow - 2 * dRow, target.col)
           isEmpty(target) &&
-          context.lastMove.contains(RegularMove(epOrigin, epTarget)) &&
+          context.lastMove.contains(Step(epOrigin, epTarget)) &&
           this(epTarget).contains(Piece(opponent, Pawn))
         }
       })
-      .map(target => RegularMove(origin, target))
+      .map(target => Step(origin, target))
   }
-  def potentialPawnMovesFrom(origin: Square, player: Player): Iterator[RegularMove] = {
+  def potentialPawnMovesFrom(origin: Square, player: Player): Iterator[Step] = {
     if (origin.row == player.promotionEdgeRow) {
       return Iterator.empty  // Promotions are generated in a separate method.
     }
-    val moves = ListBuffer.empty[RegularMove]
+    val moves = ListBuffer.empty[Step]
     val dRow = player.marchDirection
     val oneStep = (dRow, 0)
     if (origin +? oneStep && isEmpty(origin + oneStep)) {
-      moves += RegularMove(origin, origin + oneStep)
+      moves += Step(origin, origin + oneStep)
       if (origin.row == player.pawnRow) {
         val twoStep = (2 * dRow, 0)
         if (origin +? twoStep && isEmpty(origin + twoStep)) {
-          moves += RegularMove(origin, origin + twoStep)
+          moves += Step(origin, origin + twoStep)
         }
       }
     }
@@ -132,36 +132,36 @@ final class Position(
     moves.iterator
   }
 
-  def potentialKnightMovesFrom(origin: Square, player: Player): Iterator[RegularMove] = {
+  def potentialKnightMovesFrom(origin: Square, player: Player): Iterator[Step] = {
     Iterator[(Int, Int)](
       (-1, -2), (-1, +2), (+1, -2), (+1, +2),
       (-2, -1), (-2, +1), (+2, -1), (+2, +1))
       .filter(offset => origin +? offset && !isFriendlyTo(origin + offset, player))
-      .map(offset => RegularMove(origin, origin + offset))
+      .map(offset => Step(origin, origin + offset))
   }
 
-  def potentialBishopMovesFrom(origin: Square, player: Player): Iterator[RegularMove] = {
+  def potentialBishopMovesFrom(origin: Square, player: Player): Iterator[Step] = {
     Direction.Diagonal.iterator
       .flatMap(direction => rayCast(player, origin, direction))
-      .map(target => RegularMove(origin, target))
+      .map(target => Step(origin, target))
   }
 
-  def potentialRookMovesFrom(origin: Square, player: Player): Iterator[RegularMove] = {
+  def potentialRookMovesFrom(origin: Square, player: Player): Iterator[Step] = {
     Direction.Cross.iterator
       .flatMap(direction => rayCast(player, origin, direction))
-      .map(target => RegularMove(origin, target))
+      .map(target => Step(origin, target))
   }
 
-  def potentialQueenMovesFrom(origin: Square, player: Player): Iterator[RegularMove] = {
+  def potentialQueenMovesFrom(origin: Square, player: Player): Iterator[Step] = {
     potentialBishopMovesFrom(origin, player) ++
     potentialRookMovesFrom(origin, player)
   }
 
-  def potentialKingMovesFrom(origin: Square, player: Player): Iterator[RegularMove] = {
+  def potentialKingMovesFrom(origin: Square, player: Player): Iterator[Step] = {
     Direction.All.iterator
       .map(direction => direction.offset)
       .filter(offset => origin +? offset && !isFriendlyTo(origin + offset, player))
-      .map(offset => RegularMove(origin, origin + offset))
+      .map(offset => Step(origin, origin + offset))
   }
 
   def findCheckBreakersFor(player: Player): Iterator[Move] = {
@@ -182,7 +182,7 @@ final class Position(
 
     // ...either we capture it...
     val guards = _threatsBy(player)(assassin)
-    breakers ++= guards.map(guard => RegularMove(guard, assassin))
+    breakers ++= guards.map(guard => Step(guard, assassin))
 
     // ...or move a friendly piece to block its line of fire.
     this(assassin).get.kind match {
@@ -192,7 +192,7 @@ final class Position(
         )
         breakers ++= lineOfFire.flatMap(square => {
           val blockers = _threatsBy(player)(square)
-          blockers.map(RegularMove(_, square))
+          blockers.map(Step(_, square))
         })
       case _ =>
     }

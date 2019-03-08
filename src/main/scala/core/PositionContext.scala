@@ -39,12 +39,12 @@ final case class PositionContext(
       grid: Grid[Option[Piece]]): Int = {
 
     val isPawnMove = move match {
-      case RegularMove(origin, _) => grid(origin).exists(_.kind == Pawn)
+      case Step(origin, _) => grid(origin).exists(_.kind == Pawn)
       case _: Promotion => true
       case _ => false
     }
     val isCapture = (move match {
-      case RegularMove(_, target) => Some(target)
+      case Step(_, target) => Some(target)
       case promotion: Promotion => Some(promotion.targetFor(playerToMove))
       case _ => None
     }).exists(target => grid(target).nonEmpty)
@@ -61,17 +61,17 @@ final case class PositionContext(
     val newRights: mutable.HashMap[(Player, BoardSide), Boolean] = new mutable.HashMap
     newRights ++= castleRights
     move match {
-      case RegularMove(origin, _)
+      case Step(origin, _)
         if grid(origin).contains(Piece(player, King)) =>
         newRights((player, Kingside)) = false
         newRights((player, Queenside)) = false
 
-      case RegularMove(origin, _)
+      case Step(origin, _)
         if origin == player.rookSquare(Kingside) &&
            grid(origin).contains(Piece(player, Rook)) =>
         newRights((player, Kingside)) = false
 
-      case RegularMove(origin, _)
+      case Step(origin, _)
         if origin == player.rookSquare(Queenside) &&
            grid(origin).contains(Piece(player, Rook)) =>
         newRights((player, Queenside)) = false

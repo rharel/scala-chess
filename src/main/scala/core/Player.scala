@@ -22,7 +22,7 @@ sealed trait Player {
   )
 
   def play(move: Move, board: Board): Unit = move match {
-    case RegularMove(origin, target) =>
+    case Step(origin, target) =>
       val piece = board.take(origin).get
       board.put(target, piece)
 

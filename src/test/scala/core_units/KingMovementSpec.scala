@@ -11,14 +11,14 @@ class KingMovementSpec extends FlatSpec with Matchers {
 
     val moves = position.potentialKingMovesFrom(Square(3, 3), White).toSet
     moves.size should be (8)
-    moves contains RegularMove(Square(3, 3), Square(2, 2)) should be (true)
-    moves contains RegularMove(Square(3, 3), Square(2, 3)) should be (true)
-    moves contains RegularMove(Square(3, 3), Square(2, 4)) should be (true)
-    moves contains RegularMove(Square(3, 3), Square(3, 2)) should be (true)
-    moves contains RegularMove(Square(3, 3), Square(3, 4)) should be (true)
-    moves contains RegularMove(Square(3, 3), Square(4, 2)) should be (true)
-    moves contains RegularMove(Square(3, 3), Square(4, 3)) should be (true)
-    moves contains RegularMove(Square(3, 3), Square(4, 4)) should be (true)
+    moves contains Step(Square(3, 3), Square(2, 2)) should be (true)
+    moves contains Step(Square(3, 3), Square(2, 3)) should be (true)
+    moves contains Step(Square(3, 3), Square(2, 4)) should be (true)
+    moves contains Step(Square(3, 3), Square(3, 2)) should be (true)
+    moves contains Step(Square(3, 3), Square(3, 4)) should be (true)
+    moves contains Step(Square(3, 3), Square(4, 2)) should be (true)
+    moves contains Step(Square(3, 3), Square(4, 3)) should be (true)
+    moves contains Step(Square(3, 3), Square(4, 4)) should be (true)
   }
   it should "not be able to move beyond the edge of the board" in {
     val grid = ArrayGrid.fill[Option[Piece]](None)
@@ -26,15 +26,15 @@ class KingMovementSpec extends FlatSpec with Matchers {
 
     var moves = position.potentialKingMovesFrom(Square(0, 0), White).toSet
     moves.size should be (3)
-    moves contains RegularMove(Square(0, 0), Square(0, 1)) should be (true)
-    moves contains RegularMove(Square(0, 0), Square(1, 0)) should be (true)
-    moves contains RegularMove(Square(0, 0), Square(1, 1)) should be (true)
+    moves contains Step(Square(0, 0), Square(0, 1)) should be (true)
+    moves contains Step(Square(0, 0), Square(1, 0)) should be (true)
+    moves contains Step(Square(0, 0), Square(1, 1)) should be (true)
 
     moves = position.potentialKingMovesFrom(Square(7, 7), White).toSet
     moves.size should be (3)
-    moves contains RegularMove(Square(7, 7), Square(6, 6)) should be (true)
-    moves contains RegularMove(Square(7, 7), Square(6, 7)) should be (true)
-    moves contains RegularMove(Square(7, 7), Square(7, 6)) should be (true)
+    moves contains Step(Square(7, 7), Square(6, 6)) should be (true)
+    moves contains Step(Square(7, 7), Square(6, 7)) should be (true)
+    moves contains Step(Square(7, 7), Square(7, 6)) should be (true)
   }
   it should "be able to capture hostile pieces" in {
     val grid = ArrayGrid.fill[Option[Piece]](None)
@@ -44,7 +44,7 @@ class KingMovementSpec extends FlatSpec with Matchers {
 
     val moves = position.potentialKingMovesFrom(Square(3, 3), White).toSet
     moves.size should be (8)
-    moves contains RegularMove(Square(3, 3), Square(4, 4)) should be (true)
+    moves contains Step(Square(3, 3), Square(4, 4)) should be (true)
   }
   it should "not be able to move onto friendly pieces" in {
     val grid = ArrayGrid.fill[Option[Piece]](None)
@@ -54,6 +54,6 @@ class KingMovementSpec extends FlatSpec with Matchers {
 
     val moves = position.potentialKingMovesFrom(Square(3, 3), White).toSet
     moves.size should be (7)
-    moves contains RegularMove(Square(3, 3), Square(4, 4)) should be (false)
+    moves contains Step(Square(3, 3), Square(4, 4)) should be (false)
   }
 }
