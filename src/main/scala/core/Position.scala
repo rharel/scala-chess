@@ -223,13 +223,13 @@ final class Position(
     path.iterator
   }
 
-  private val _kingSquare: HashMap[Player, Option[Square]] = HashMap(
-    (Black, Grid.Squares.find(this(_).contains(Piece(Black, King)))),
-    (White, Grid.Squares.find(this(_).contains(Piece(White, King))))
+  private val _kingSquare: Map[Player, Option[Square]] = Map(
+    Black -> Grid.Squares.find(this(_).contains(Piece(Black, King))),
+    White -> Grid.Squares.find(this(_).contains(Piece(White, King)))
   )
-  private val _threatsBy: HashMap[Player, ArrayGrid[ListBuffer[Square]]] = HashMap(
-    (Black, ArrayGrid.populate(_ => new ListBuffer[Square])),
-    (White, ArrayGrid.populate(_ => new ListBuffer[Square]))
+  private val _threatsBy: Map[Player, ArrayGrid[ListBuffer[Square]]] = Map(
+    Black -> ArrayGrid.populate(_ => new ListBuffer[Square]),
+    White -> ArrayGrid.populate(_ => new ListBuffer[Square])
   )
   Grid.Squares.iterator
     .filter(square => isOccupied(square))
