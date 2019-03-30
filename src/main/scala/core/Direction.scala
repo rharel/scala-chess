@@ -6,7 +6,13 @@ object Direction {
   val All: Iterable[Direction] = Cross ++ Diagonal
 
   def between(origin: Square, target: Square): Option[Direction] =
-    Direction.All.find(_.offset == (origin offset target))
+    target offset origin match {
+      case (dRow, dCol) if dRow == 0 || dCol == 0 =>
+        Direction.Cross.find(_.offset == (dRow.signum, dCol.signum))
+      case (dRow, dCol) if dRow.abs == dCol.abs =>
+        Direction.Diagonal.find(_.offset == (dRow.signum, dCol.signum))
+      case _ => None
+    }
 }
 sealed trait Direction {
   val offset: (Int, Int)
