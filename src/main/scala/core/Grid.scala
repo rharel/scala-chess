@@ -1,7 +1,7 @@
 package core
 
 object Grid {
-  val Size = 8
+  val Size: Int = Coordinate.Last + 1
   val SquareCount: Int = Size * Size
   val Squares: Iterable[Square] =
     for (row <- Row.All; col <- Col.All) yield Square(row, col)

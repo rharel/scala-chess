@@ -2,7 +2,7 @@ package core
 
 object Coordinate {
   val First: Int = 0
-  val Last: Int = Grid.Size - 1
+  val Last: Int = 7
 
   def isValid(value: Int): Boolean = First <= value && value <= Last
   def isFirst(value: Int): Boolean = value == First
